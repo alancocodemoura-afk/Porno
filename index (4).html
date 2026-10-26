@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<title>JARVIS AI</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--cy:#00e5ff;--cy-d:rgba(0,229,255,.14);--bg:#000;--pn:#071017;--pn2:#0b1a24;--bd:rgba(0,229,255,.24);--tx:#fff;--mu:#8fb3bd;--er:#ff5470;--ok:#3dffa8;--mono:ui-monospace,"Roboto Mono",Menlo,Consolas,monospace}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#000;color:var(--tx);font:15px/1.5 system-ui,Roboto,"Segoe UI",sans-serif;overscroll-behavior:none}
+body{display:flex;flex-direction:column;height:100dvh;padding-top:env(safe-area-inset-top);overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:transparent;border:1px solid var(--bd);border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--cy)}
+button:active{background:var(--cy-d)}
+button.pri{background:var(--cy);color:#001418;border-color:var(--cy);font-weight:600}
+button.dng{color:var(--er);border-color:rgba(255,84,112,.4)}
+button:disabled{opacity:.35;pointer-events:none}
+input,select,textarea{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;width:100%;outline:none}
+input:focus,select:focus,textarea:focus,button:focus-visible{border-color:var(--cy);box-shadow:0 0 0 2px var(--cy-d)}
+input[type=checkbox]{width:auto}
+textarea{resize:none}
+h3,h4{margin:.6em 0 .3em;font-weight:600}
+a{color:var(--cy)}
+header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid var(--bd);min-height:50px}
+.brand b{font-family:var(--mono);letter-spacing:.18em;font-size:16px;text-shadow:0 0 12px rgba(0,229,255,.7)}
+.sub{display:block;font-family:var(--mono);font-size:11px;color:var(--mu)}
+.sub i{font-style:normal;color:var(--cy)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chip{font-family:var(--mono);font-size:10px;border:1px solid var(--bd);border-radius:20px;padding:2px 8px;color:var(--mu)}
+.chip.ok{color:var(--ok);border-color:rgba(61,255,168,.4)}
+main{flex:1;min-height:0;position:relative}
+.view{display:none;position:absolute;inset:0;overflow-y:auto;padding:12px 16px 16px;-webkit-overflow-scrolling:touch}
+.view.on{display:block}
+.orbwrap{height:min(46vh,340px);position:relative}
+#orb{width:100%;height:100%;display:block}
+.hello{text-align:center;font-family:var(--mono);font-size:14px;color:var(--cy);margin:2px 0 10px;min-height:22px}
+.reply{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;max-height:30vh;overflow-y:auto;font-size:14px}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center}
+.quick button{font-size:13px;border-radius:20px}
+#msgs{display:flex;flex-direction:column;gap:10px;padding-bottom:6px}
+.m{max-width:92%;padding:10px 13px;border-radius:14px;word-wrap:break-word;overflow-wrap:anywhere;font-size:14.5px}
+.m.u{align-self:flex-end;background:var(--cy-d);border:1px solid var(--bd)}
+.m.a{align-self:flex-start;background:var(--pn);border:1px solid rgba(255,255,255,.08)}
+.m.err{border-color:rgba(255,84,112,.5)}
+.m .tag{font-family:var(--mono);font-size:10px;color:var(--mu);display:block;margin-bottom:3px}
+.m .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.m .acts button{font-size:12px;padding:4px 9px;color:var(--mu)}
+.m .src{font-size:12px;color:var(--mu);margin-top:6px}
+.m li{margin-left:18px;list-style:disc}
+.code{margin:8px 0;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:#02080c}
+.code .ch{display:flex;justify-content:space-between;align-items:center;padding:3px 8px;background:var(--pn2);font-family:var(--mono);font-size:11px;color:var(--mu)}
+.code .ch button{padding:2px 8px;font-size:11px}
+.code pre{margin:0;padding:10px;overflow-x:auto;font:12.5px/1.45 var(--mono);white-space:pre}
+code{font-family:var(--mono);background:var(--pn2);padding:1px 5px;border-radius:5px;font-size:.92em}
+.bar2{display:flex;gap:8px;margin-bottom:10px}
+.bar2 select{flex:1}
+#composer{padding:8px 12px 6px;border-top:1px solid var(--bd);background:#000}
+#composer .row{display:flex;gap:6px;align-items:flex-end}
+#composer .row2{display:flex;gap:10px;align-items:center;margin-top:5px;font-size:12px;color:var(--mu);flex-wrap:wrap}
+#composer .row2 select{width:auto;padding:3px 6px;font-size:12px}
+#composer .row2 label{display:flex;gap:5px;align-items:center}
+.lnk{border:none;padding:2px 4px;color:var(--mu);font-size:12px}
+.ib{width:42px;height:42px;padding:0;display:grid;place-items:center;flex:none;border-radius:50%}
+.ib svg{width:20px;height:20px}
+.ib.live{background:var(--cy);color:#001418;animation:pl 1s infinite}
+@keyframes pl{50%{box-shadow:0 0 0 8px rgba(0,229,255,.18)}}
+.talk{flex:1;height:42px;border-radius:22px}
+#attChip{font-size:12px;color:var(--cy);margin-bottom:5px;font-family:var(--mono)}
+nav{display:flex;border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom);background:#000}
+nav button{flex:1;border:none;border-radius:0;padding:8px 0 6px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mu);font-family:var(--mono)}
+nav button svg{width:22px;height:22px}
+nav button.on{color:var(--cy);text-shadow:0 0 8px rgba(0,229,255,.6)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:12px;text-align:left;color:var(--tx);display:block;width:100%}
+.card b{display:block;margin-bottom:2px}
+.card span{font-size:12px;color:var(--mu)}
+.card .gl{font-family:var(--mono);color:var(--cy);font-size:18px;display:block;margin-bottom:4px}
+#sheet{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 50px);bottom:calc(57px + env(safe-area-inset-bottom));background:#000;z-index:20;display:flex;flex-direction:column}
+#sheet[hidden]{display:none}
+#sheet .sh{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--bd)}
+#sheet .sh b{flex:1}
+#sheetBody{flex:1;overflow-y:auto;padding:12px 16px 24px}
+.box{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:0 0 auto}.row>.f{flex:1 1 140px}
+label.l{display:block;font-size:12px;color:var(--mu);margin:10px 0 4px;font-family:var(--mono)}
+.muted{color:var(--mu);font-size:13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
+.kv span:nth-child(odd){color:var(--mu)}
+details{background:var(--pn);border:1px solid var(--bd);border-radius:14px;margin-bottom:10px}
+details>summary{padding:12px 14px;cursor:pointer;font-weight:600;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"+";float:right;color:var(--cy)}
+details[open]>summary::after{content:"–"}
+details>.in{padding:0 14px 14px}
+pre.live{background:#02080c;border:1px solid var(--bd);border-radius:10px;padding:10px;max-height:240px;overflow:auto;white-space:pre-wrap;font:12.5px/1.45 var(--mono);margin:8px 0}
+.badge{font-family:var(--mono);font-size:11px;border:1px solid var(--bd);border-radius:20px;padding:1px 8px;color:var(--cy)}
+.badge.er{color:var(--er);border-color:rgba(255,84,112,.5)}
+.badge.ok{color:var(--ok);border-color:rgba(61,255,168,.5)}
+.bigbar{height:6px;background:var(--pn2);border-radius:4px;overflow:hidden;margin:6px 0}
+.bigbar i{display:block;height:100%;background:var(--cy);width:0}
+#toast{position:fixed;left:50%;bottom:calc(130px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#06222b;border:1px solid var(--cy);color:#fff;padding:8px 14px;border-radius:20px;font-size:13px;z-index:50;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:60;display:grid;place-items:center;padding:20px}
+#dlg[hidden]{display:none}
+#dlg .box{width:100%;max-width:420px;margin:0}
+#dlg .btns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gal img{width:100%;border-radius:10px;display:block}
+body.lp *{animation:none!important;transition:none!important;text-shadow:none!important;box-shadow:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><b>JARVIS AI</b><span class="sub">ESTADO: <i id="stateTxt">EN LÍNEA</i></span></div>
+  <div class="chips"><span id="chipAI" class="chip">IA: sin clave</span><span id="chipLP" class="chip" hidden>BAJO CONSUMO</span></div>
+</header>
+
+<main>
+  <section id="v-home" class="view on">
+    <div class="orbwrap"><canvas id="orb" aria-label="Esfera holográfica de JARVIS"></canvas></div>
+    <div id="hello" class="hello">Estoy listo. ¿En qué puedo ayudarte?</div>
+    <div id="lastReply" class="reply" hidden></div>
+    <div id="setupBanner" class="box" hidden>
+      <b>Falta conectar una IA</b>
+      <p class="muted">Para conversar necesitas una clave de API gratuita de un proveedor (Gemini, Groq u OpenRouter). Tarda un par de minutos.</p>
+      <button class="pri" id="bSetup">Configurar IA</button>
+    </div>
+    <div class="quick" id="quick"></div>
+  </section>
+
+  <section id="v-chat" class="view">
+    <div class="bar2"><select id="chatSel" aria-label="Conversaciones"></select><button id="bNewChat">Nueva</button><button id="bDelChat" class="dng">Borrar</button></div>
+    <div id="msgs"></div>
+  </section>
+
+  <section id="v-tools" class="view"><div id="toolGrid" class="grid"></div></section>
+  <section id="v-sys" class="view"><div id="sysBody"></div></section>
+</main>
+
+<div id="sheet" hidden>
+  <div class="sh"><button id="sheetBack">← Volver</button><b id="sheetTitle"></b></div>
+  <div id="sheetBody"></div>
+</div>
+
+<div id="composer">
+  <div id="attChip" hidden></div>
+  <div class="row">
+    <button id="bMode" class="ib" title="Cambiar entre escribir y hablar" aria-label="Cambiar entre escribir y hablar"></button>
+    <textarea id="inp" rows="1" placeholder="Escribe a JARVIS…" aria-label="Mensaje"></textarea>
+    <button id="bTalk" class="talk" hidden>Toca para hablar</button>
+    <button id="bMic" class="ib" title="Dictar por voz" aria-label="Dictar por voz"></button>
+    <button id="bSend" class="ib pri" title="Enviar" aria-label="Enviar"></button>
+  </div>
+  <div class="row2">
+    <select id="selExt" aria-label="Extensión de la respuesta"><option value="breve">Breve</option><option value="detallado">Detallado</option><option value="extenso">Extenso</option><option value="maxima">Máxima extensión</option></select>
+    <label><input type="checkbox" id="tSearch"> Búsqueda web</label>
+    <button id="bStopVoice" class="lnk">Detener voz</button>
+  </div>
+</div>
+
+<nav>
+  <button data-tab="home" class="on"></button>
+  <button data-tab="chat"></button>
+  <button data-tab="tools"></button>
+  <button data-tab="sys"></button>
+</nav>
+
+<div id="toast"></div>
+<div id="dlg" hidden></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   JARVIS AI — PWA de un solo archivo. Sin dependencias externas.
+   Secciones: utilidades · DB · claves · proveedores IA · chat · voz ·
+   esfera · proyectos largos · herramientas · sistema · arranque
+   ===================================================================== */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const sleep=(ms,sig)=>new Promise((res,rej)=>{const t=setTimeout(res,ms);if(sig)sig.addEventListener('abort',()=>{clearTimeout(t);rej(new DOMException('abort','AbortError'))},{once:true})});
+const ICON={
+ home:'M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+ chat:'M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z',
+ tools:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
+ sys:'M7 7h10v10H7zM9 3v4M15 3v4M9 17v4M15 17v4M3 9h4M3 15h4M17 9h4M17 15h4',
+ mic:'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3',
+ send:'M22 2L11 13M22 2l-7 20-4-9-9-4z',
+ stop:'M6 6h12v12H6z',
+ kb:'M3 6h18v12H3zM7 10h.01M11 10h.01M15 10h.01M7 14h10'
+};
+const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${ICON[n]}"/></svg>`;
+let toastT;function toast(m,ms=2800){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms)}
+function modal({title,body='',input=null,okText='Aceptar',cancelText='Cancelar'}){return new Promise(res=>{const d=$('#dlg');d.hidden=false;d.innerHTML=`<div class="box"><h3>${esc(title)}</h3><div class="muted">${body}</div>${input?`<input id="dIn" type="${input}" autocomplete="off" style="margin-top:10px">`:''}<div class="btns">${cancelText?`<button id="dNo">${cancelText}</button>`:''}<button id="dOk" class="pri">${okText}</button></div></div>`;const done=v=>{d.hidden=true;d.innerHTML='';res(v)};$('#dOk').onclick=()=>done(input?$('#dIn').value:true);if($('#dNo'))$('#dNo').onclick=()=>done(input?null:false);const i=$('#dIn');if(i)i.focus()})}
+const confirmBox=(t,b)=>modal({title:t,body:b,okText:'Confirmar'});
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copiado');return true}catch{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch{}a.remove();toast(ok?'Copiado':'No se pudo copiar');return ok}}
+function download(name,parts,type='text/plain'){const b=new Blob(parts,{type:type+';charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+const slug=s=>(s||'documento').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'documento';
+const fmtN=n=>new Intl.NumberFormat('es').format(n);
+
+/* ---------- Ajustes ---------- */
+const DEF={provider:'gemini',models:{gemini:'gemini-3.1-flash-lite',groq:'llama-3.3-70b-versatile',openrouter:'meta-llama/llama-3.3-70b-instruct:free',custom:'',pollinations:''},baseUrls:{groq:'https://api.groq.com/openai/v1',openrouter:'https://openrouter.ai/api/v1',custom:''},speak:'voice',voiceURI:'',rate:1,lang:'es-ES',lowPower:'auto',ext:'detallado',maxParts:40,wake:true,history:true,memoryOn:true,search:false,autoCont:true,inputMode:'text',confirmOpen:false};
+let S=Object.assign({},DEF);
+try{const o=JSON.parse(localStorage.getItem('jv_s')||'{}');S=Object.assign({},DEF,o,{models:Object.assign({},DEF.models,o.models),baseUrls:Object.assign({},DEF.baseUrls,o.baseUrls)})}catch{}
+const saveS=()=>localStorage.setItem('jv_s',JSON.stringify(S));
+const PROV={gemini:{n:'Google Gemini (AI Studio)',help:'aistudio.google.com/apikey'},groq:{n:'Groq (compatible OpenAI)',help:'console.groq.com/keys'},openrouter:{n:'OpenRouter (modelos :free)',help:'openrouter.ai/keys'},custom:{n:'Otro compatible con OpenAI',help:'la que indique tu proveedor'}};
+
+/* ---------- Base de datos local (IndexedDB) ---------- */
+const DB={db:null,
+ open(){return new Promise((res,rej)=>{const r=indexedDB.open('jarvis',1);r.onupgradeneeded=()=>{['chats','notes','projects','kv'].forEach(s=>r.result.createObjectStore(s,{keyPath:'id'}))};r.onsuccess=()=>{this.db=r.result;res()};r.onerror=()=>rej(r.error)})},
+ rq(r){return new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})},
+ st(s,m='readonly'){return this.db.transaction(s,m).objectStore(s)},
+ get(s,id){return this.rq(this.st(s).get(id))},
+ put(s,v){return this.rq(this.st(s,'readwrite').put(v))},
+ del(s,id){return this.rq(this.st(s,'readwrite').delete(id))},
+ all(s){return this.rq(this.st(s).getAll())},
+ clear(s){return this.rq(this.st(s,'readwrite').clear())},
+ keys(s){return this.rq(this.st(s).getAllKeys())}
+};
+
+/* ---------- Claves de API (cifradas con PIN: PBKDF2 + AES-GCM) ---------- */
+const KEYS={};
+const enc=new TextEncoder(),dec=new TextDecoder();
+const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u)));
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function dkey(pin,salt){const km=await crypto.subtle.importKey('raw',enc.encode(pin),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function storeKey(p,key,pin){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const k=await dkey(pin,salt);const c=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,enc.encode(key));localStorage.setItem('jv_k_'+p,JSON.stringify({s:b64(salt),i:b64(iv),c:b64(c)}))}
+async function unlockKeys(pin){let ok=0;for(const p of Object.keys(DEF.models)){const r=localStorage.getItem('jv_k_'+p);if(!r)continue;try{const o=JSON.parse(r);const k=await dkey(pin,unb64(o.s));const d=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.i)},k,unb64(o.c));KEYS[p]=dec.decode(d);ok++}catch{}}return ok}
+const storedKeys=()=>Object.keys(DEF.models).filter(p=>localStorage.getItem('jv_k_'+p));
+
+/* ---------- Capa de proveedores de IA (intercambiable) ---------- */
+class ApiError extends Error{constructor(m,status,net){super(m);this.status=status||0;this.isNet=!!net}}
+async function readSSE(res,onData){const rd=res.body.getReader();const d=new TextDecoder();let buf='';for(;;){const {done,value}=await rd.read();if(done)break;buf+=d.decode(value,{stream:true});let i;while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);if(line.startsWith('data:')){const x=line.slice(5).trim();if(x)onData(x)}}}}
+async function httpErr(res){let m='';try{const j=await res.json();m=(j.error&&(j.error.message||JSON.stringify(j.error)))||JSON.stringify(j)}catch{try{m=await res.text()}catch{}}
+ const h=res.status===429?' (cuota o límite de velocidad alcanzado: espera o cambia de proveedor/modelo)':(res.status===401||res.status===403)?' (clave inválida o sin permiso)':res.status===404?' (modelo no encontrado: revisa su nombre en Ajustes)':'';
+ return new ApiError(`HTTP ${res.status}${h}: ${String(m).slice(0,280)}`,res.status)}
+/* Contrato común: llm({system,messages:[{role,text}],maxTokens,signal,onText,onSources,noThink,search}) -> {finish:'stop'|'length'|otro} */
+async function llm({system,messages,maxTokens=2048,signal,onText,onSources,noThink=false,search=false}){
+ const p=S.provider,key=KEYS[p],model=S.models[p];
+ if(!key)throw new ApiError('Falta la clave de API. Ve a Sistema → Ajustes de IA.');
+ if(!model)throw new ApiError('Falta el nombre del modelo en Ajustes de IA.');
+ if(!navigator.onLine)throw new ApiError('Sin conexión a Internet.',0,true);
+ let finish='stop';
+ try{
+  let res;
+  if(p==='gemini'){
+   const body={systemInstruction:{parts:[{text:system}]},contents:messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.text}]})),generationConfig:{maxOutputTokens:maxTokens,temperature:.8}};
+   if(noThink&&/2\.5-flash/.test(model))body.generationConfig.thinkingConfig={thinkingBudget:0};
+   if(search)body.tools=[{google_search:{}}];
+   res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body),signal});
+   if(!res.ok)throw await httpErr(res);
+   await readSSE(res,d=>{let j;try{j=JSON.parse(d)}catch{return}const c=j.candidates&&j.candidates[0];if(!c)return;
+    const t=((c.content&&c.content.parts)||[]).map(x=>x.text||'').join('');if(t&&onText)onText(t);
+    if(c.finishReason)finish=c.finishReason==='MAX_TOKENS'?'length':String(c.finishReason).toLowerCase();
+    const g=c.groundingMetadata&&c.groundingMetadata.groundingChunks;if(g&&onSources)onSources(g.filter(x=>x.web).map(x=>({title:x.web.title,uri:x.web.uri})))});
+  }else{
+   const base=(S.baseUrls[p]||'').replace(/\/$/,'');
+   if(!base)throw new ApiError('Falta la URL base del proveedor en Ajustes de IA.');
+   const msgs=[{role:'system',content:system},...messages.map(m=>({role:m.role,content:m.text}))];
+   res=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:msgs,max_tokens:maxTokens,temperature:.8,stream:true}),signal});
+   if(!res.ok)throw await httpErr(res);
+   await readSSE(res,d=>{if(d==='[DONE]')return;let j;try{j=JSON.parse(d)}catch{return}const c=j.choices&&j.choices[0];if(!c)return;const t=c.delta&&c.delta.content;if(t&&onText)onText(t);if(c.finish_reason)finish=c.finish_reason});
+  }
+ }catch(e){if(e.name==='AbortError'||e instanceof ApiError)throw e;throw new ApiError('Error de red o de lectura: '+e.message,0,true)}
+ return {finish};
+}
+const TOK={breve:700,detallado:2048,extenso:4096,maxima:8192};
+
+/* ---------- Estado global ---------- */
+let STATE='idle',BUSY=false,CTRL=null,MEM=[],REM=[],ATT=null,PRESET='',EXTRA='';
+let CH={id:uid(),title:'Nueva conversación',msgs:[],updated:Date.now()};
+let AUTO_LP=false;
+const lowP=()=>S.lowPower==='on'||(S.lowPower==='auto'&&AUTO_LP);
+const STLBL={idle:'EN LÍNEA',listening:'ESCUCHANDO',processing:'PROCESANDO',speaking:'RESPONDIENDO'};
+function setState(s){STATE=s;$('#stateTxt').textContent=(s==='idle'&&!navigator.onLine)?'SIN CONEXIÓN':STLBL[s];$('#bMic').classList.toggle('live',s==='listening')}
+function refreshChips(){const ok=!!KEYS[S.provider];const c=$('#chipAI');c.textContent=ok?`IA: ${S.provider}`:'IA: sin clave';c.classList.toggle('ok',ok);$('#setupBanner').hidden=ok;$('#chipLP').hidden=!lowP();document.body.classList.toggle('lp',lowP())}
+
+/* ---------- Prompt de sistema ---------- */
+function sysPrompt(){
+ const ext={breve:'Sé breve: pocas frases.',detallado:'Responde con el detalle necesario, claro y estructurado.',extenso:'Responde de forma extensa y completa, con estructura y ejemplos.',maxima:'Responde con la máxima profundidad y extensión posibles.'}[S.ext];
+ return `Eres JARVIS AI, un asistente tecnológico profesional, analítico, preciso y ligeramente ingenioso, inspirado en la ficción (no eres el JARVIS oficial de Marvel ni lo afirmas). Respondes en español natural salvo que se pida otro idioma. Explicas tu razonamiento cuando ayuda, distingues hechos de estimaciones, admites cuando no sabes algo y no inventas datos, fuentes ni funciones. Fecha y hora actuales: ${new Date().toLocaleString('es')}. No controlas el teléfono por tu cuenta: solo la app puede ejecutar acciones y únicamente con confirmación del usuario. ${ext}`
+ +(S.memoryOn&&MEM.length?`\nDatos y preferencias que el usuario autorizó recordar:\n- ${MEM.join('\n- ')}`:'')
+ +(PRESET?`\nModo activo: ${PRESET}`:'');
+}
+
+/* ---------- Markdown mínimo ---------- */
+function md(s){return String(s||'').split('```').map((p,i)=>{if(i%2){const nl=p.indexOf('\n');const lang=nl<0?'':p.slice(0,nl).trim();const code=nl<0?'':p.slice(nl+1);return `<div class="code"><div class="ch"><span>${esc(lang||'código')}</span><button data-copycode>Copiar</button></div><pre>${esc(code)}</pre></div>`}
+ return esc(p).replace(/^#{1,2} (.*)$/gm,'<h3>$1</h3>').replace(/^### (.*)$/gm,'<h4>$1</h4>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/^\s*[-*] (.*)$/gm,'<li>$1</li>').replace(/\n/g,'<br>')}).join('')}
+
+/* ---------- Chat ---------- */
+const persistChat=()=>{if(S.history&&CH.msgs.length){CH.updated=Date.now();DB.put('chats',CH).catch(()=>{})}};
+function ctxMessages(m,continuing){
+ let arr=CH.msgs.filter(x=>x!==m&&!x.err).map(x=>({role:x.role,text:x.full||x.text}));
+ let tot=0,out=[];for(let i=arr.length-1;i>=0;i--){tot+=arr[i].text.length;if(tot>40000&&out.length)break;out.unshift(arr[i])}
+ while(out.length&&out[0].role!=='user')out.shift();
+ if(continuing)out.push({role:'assistant',text:m.text},{role:'user',text:'Continúa exactamente desde donde te quedaste, sin repetir nada y sin saludar.'});
+ return out;
+}
+function renderChat(){
+ const box=$('#msgs');box.innerHTML=CH.msgs.map((m,i)=>{
+  const last=i===CH.msgs.length-1;
+  const acts=m.role==='assistant'?`<div class="acts"><button data-act="copy" data-i="${i}">Copiar</button><button data-act="speak" data-i="${i}">Leer</button>${m.trunc&&last?`<button data-act="cont" data-i="${i}">Continuar</button>`:''}${m.err&&last?`<button data-act="retry" data-i="${i}">Reintentar</button>`:''}</div>`:'';
+  const src=m.sources&&m.sources.length?`<div class="src">Fuentes: ${m.sources.slice(0,5).map(s=>`<a href="${esc(s.uri)}" target="_blank" rel="noopener">${esc(s.title||'enlace')}</a>`).join(' · ')}</div>`:'';
+  return `<div class="m ${m.role==='user'?'u':'a'}${m.err?' err':''}" data-i="${i}">${m.local?'<span class="tag">LOCAL · sin IA</span>':''}<div class="body">${md(m.text||(m.err?'':'…'))}${m.err?`<div style="color:var(--er)">${esc(m.err)}</div>`:''}</div>${m.trunc&&last&&!m.err?'<div class="muted">La respuesta se cortó por el límite del modelo.</div>':''}${src}${acts}</div>`}).join('')||'<p class="muted">Aún no hay mensajes. Escribe o habla con JARVIS.</p>';
+ autoscroll();updateHome();
+}
+function autoscroll(){const v=$('#v-chat');if(v.scrollHeight-v.scrollTop-v.clientHeight<260)v.scrollTop=v.scrollHeight}
+let upd=0;function scheduleUpdate(){if(upd)return;upd=requestAnimationFrame(()=>{upd=0;const m=CH.msgs[CH.msgs.length-1];const el=$('#msgs .m:last-child .body');if(m&&el){el.innerHTML=md(m.text||'…');autoscroll()}updateHome()})}
+function updateHome(){const m=[...CH.msgs].reverse().find(x=>x.role==='assistant');const r=$('#lastReply');if(!m||!(m.text||m.err)){r.hidden=true;return}r.hidden=false;const t=m.text.length>1500?'…'+m.text.slice(-1500):m.text;r.innerHTML=md(t)+(m.err?`<div style="color:var(--er)">${esc(m.err)}</div>`:'');r.scrollTop=r.scrollHeight;$('#hello').textContent=BUSY?'Procesando tu petición…':'Estoy listo. ¿En qué puedo ayudarte?'}
+function updateSend(){const b=$('#bSend');b.innerHTML=BUSY?svg('stop'):svg('send');b.title=BUSY?'Detener':'Enviar'}
+
+async function send(raw,{voice=false,extra='',preset=''}={}){
+ const text=(raw||'').trim();if((!text&&!ATT)||BUSY)return;
+ $('#inp').value='';autosize();
+ if(!ATT&&!extra&&await localCmd(text))return;
+ let full=text;
+ if(ATT){full=`[Archivo adjunto: ${ATT.name}]\n"""\n${ATT.text}\n"""\n\n${text||'Analiza este archivo y resume lo importante.'}`;clearAtt()}
+ if(extra)full=`${extra}\n\n${full}`;
+ if(S.search&&S.provider!=='gemini'&&!extra){try{const r=await wiki(text);if(r.length)full=`${wikiCtx(r)}\n\n${full}`;else toast('Sin resultados de búsqueda')}catch(e){toast('Búsqueda no disponible: '+e.message)}}
+ CH.msgs.push({role:'user',text:text||'(archivo adjunto)',full:full!==text?full:undefined});
+ if(CH.title==='Nueva conversación')CH.title=(text||'Archivo').slice(0,42);
+ PRESET=preset;
+ await respond({voice});
+}
+async function respond({voice=false,cont=false}={}){
+ BUSY=true;CTRL=new AbortController();setState('processing');updateSend();
+ let m;if(cont){m=CH.msgs[CH.msgs.length-1];m.trunc=false;m.err=null}else{m={role:'assistant',text:'',sources:[]};CH.msgs.push(m)}
+ renderChat();let chain=0;
+ try{
+  for(;;){
+   const r=await llm({system:sysPrompt(),messages:ctxMessages(m,!!m.text),maxTokens:TOK[S.ext],signal:CTRL.signal,search:S.search&&S.provider==='gemini',
+    onText:t=>{m.text+=t;Orb.pulse();scheduleUpdate()},onSources:s=>{m.sources=s}});
+   if(r.finish==='length'){m.trunc=true;if(S.autoCont&&chain<3){chain++;m.trunc=false;continue}}
+   else{m.trunc=false;if(r.finish!=='stop'&&!m.text)m.err='La respuesta fue bloqueada o vacía ('+r.finish+').'}
+   break;
+  }
+ }catch(e){
+  if(e.name==='AbortError'){if(m.text)m.trunc=true;else CH.msgs.pop()}
+  else{m.err=e.message;if(m.text)m.trunc=true}
+ }
+ BUSY=false;PRESET='';updateSend();persistChat();renderChat();
+ if(m.text&&!m.err&&(S.speak==='always'||(S.speak==='voice'&&voice)))speak(m.text);else setState('idle');
+}
+function stopAll(){if(CTRL)CTRL.abort()}
+function autosize(){const t=$('#inp');t.style.height='auto';t.style.height=Math.min(t.scrollHeight,110)+'px'}
+function clearAtt(){ATT=null;$('#attChip').hidden=true}
+function setAtt(a){ATT=a;const c=$('#attChip');c.hidden=false;c.innerHTML=`Adjunto: ${esc(a.name)} (${fmtN(a.text.length)} car.) <button class="lnk" id="bAttX">Quitar</button>`;$('#bAttX').onclick=clearAtt}
+
+/* ---------- Comandos locales (no usan IA) ---------- */
+async function localReply(userText,reply){CH.msgs.push({role:'user',text:userText},{role:'assistant',text:reply,local:true});persistChat();renderChat();setState('idle')}
+async function localCmd(t){
+ let m;
+ if((m=t.match(/^(?:calcula|cu[aá]nto es)\s+(.+)/i))){try{const r=calcEval(m[1]);await localReply(t,`**${m[1].trim()} = ${r}**`);return true}catch{return false}}
+ if(/^(?:qu[eé] )?bater[ií]a(?: tengo| me queda)?\??$/i.test(t)||/^nivel de bater[ií]a/i.test(t)){const b=await battery();await localReply(t,b?`Batería: **${b.lvl}%** ${b.chg?'(cargando)':'(sin cargar)'}.`:'Este navegador no expone el nivel de batería.');return true}
+ if((m=t.match(/^(?:nota|anota)\s*[:\-]?\s+(.+)/i))){await DB.put('notes',{id:uid(),title:m[1].slice(0,40),text:m[1],updated:Date.now()});await localReply(t,'Nota guardada en este dispositivo.');return true}
+ if((m=t.match(/^recu[eé]rdame\s+(?:en|dentro de)\s+(\d+)\s*(minutos?|min|horas?|h)\s+(?:que\s+|de\s+)?(.+)/i))){const n=+m[1]*(/^h/i.test(m[2])?60:1);await addReminder(m[3],Date.now()+n*60000);await localReply(t,`Recordatorio creado para dentro de ${n} min. Solo sonará si la app sigue abierta (ver Herramientas → Teléfono).`);return true}
+ if((m=t.match(/^recuerda que\s+(.+)/i))){MEM.push(m[1].trim());await saveMem();await localReply(t,'Anotado en tu memoria. Puedes verla o borrarla en Herramientas → Memoria.');return true}
+ {const n2=nrm(t).replace(/[.!?]+$/,''),o2=t.replace(/[.!?]+$/,'').trim();let mm;
+  if((mm=n2.match(/^(?:crea|crear|creame|genera|generar|generame|dibuja|dibujame|haz|hazme)\s+(?:me\s+)?(?:una?\s+)?(?:imagen|foto|dibujo|ilustracion)\s+(?:de\s+|del\s+|sobre\s+)?(.+)$/))){const pr=o2.slice(o2.length-mm[1].length);await localReply(t,'Abriendo el creador de imágenes…');goTab('tools');openSheet('Imágenes y video',bb=>toolMedia(bb,{auto:pr}));return true}
+  if((mm=n2.match(/^(?:crea|crear|creame|genera|generar|haz|hazme)\s+(?:me\s+)?(?:un\s+)?video\s+(?:de\s+|del\s+|sobre\s+)?(.+)$/))){const pr=o2.slice(o2.length-mm[1].length);await localReply(t,'Abriendo el creador de videos. Revisa los datos y pulsa «Crear video automático».');goTab('tools');openSheet('Imágenes y video',bb=>toolMedia(bb,{video:pr}));return true}}
+ {const nt=t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.,!?¡¿]/g,'').trim();
+  if((m=nt.match(/^(?:abre|abrir|abreme|abri|lanza|inicia|ve a|anda a)\s+(?:la app de |la aplicacion de |la aplicacion |la app |el |la |los |las )?(.+)$/))){const a=findApp(m[1].trim());if(a){await localReply(t,`Abriendo **${a.n}**…`);await openApp(a);return true}}}
+ return false;
+}
+
+/* ---------- Calculadora (local, sin IA) ---------- */
+function calcEval(src){
+ const s=src.toLowerCase().replace(/\s+/g,'').replace(/×/g,'*').replace(/÷/g,'/').replace(/π/g,'pi').replace(/,/g,'.').replace(/\*\*/g,'^');
+ let i=0;
+ const F={sqrt:Math.sqrt,sin:Math.sin,cos:Math.cos,tan:Math.tan,asin:Math.asin,acos:Math.acos,atan:Math.atan,log:Math.log10,ln:Math.log,abs:Math.abs,round:Math.round,floor:Math.floor,ceil:Math.ceil,exp:Math.exp};
+ const C={pi:Math.PI,e:Math.E};
+ const fact=n=>{if(n<0||n>170||n%1)throw Error('factorial inválido');let r=1;for(let k=2;k<=n;k++)r*=k;return r};
+ function expr(){let v=term();while(s[i]==='+'||s[i]==='-'){const o=s[i++];const r=term();v=o==='+'?v+r:v-r}return v}
+ function term(){let v=un();while(s[i]==='*'||s[i]==='/'){const o=s[i++];const r=un();v=o==='*'?v*r:v/r}return v}
+ function un(){if(s[i]==='-'){i++;return -un()}if(s[i]==='+'){i++;return un()}return pow()}
+ function pow(){const b=post();if(s[i]==='^'){i++;return Math.pow(b,un())}return b}
+ function post(){let v=prim();for(;;){if(s[i]==='%'){i++;v/=100}else if(s[i]==='!'){i++;v=fact(v)}else break}return v}
+ function prim(){
+  if(s[i]==='('){i++;const v=expr();if(s[i]!==')')throw Error('Falta )');i++;return v}
+  let m=s.slice(i).match(/^\d*\.?\d+(?:e[+-]?\d+)?/);if(m){i+=m[0].length;return parseFloat(m[0])}
+  m=s.slice(i).match(/^[a-z]+/);if(m){i+=m[0].length;const n=m[0];if(F[n]){if(s[i]!=='(')throw Error('Falta (');i++;const v=expr();if(s[i]!==')')throw Error('Falta )');i++;return F[n](v)}if(n in C)return C[n];throw Error('Desconocido: '+n)}
+  throw Error('Expresión no válida');
+ }
+ const r=expr();if(i<s.length)throw Error('Expresión no válida');if(!isFinite(r))throw Error('Resultado no finito');
+ return Number(r.toPrecision(12));
+}
+
+/* ---------- Búsqueda web (Wikipedia en español; Google en Gemini) ---------- */
+async function wiki(q){const u=`https://es.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=3&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exchars=900&format=json&origin=*`;const r=await fetch(u);if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();return Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>a.index-b.index).map(p=>({title:p.title,url:p.fullurl,text:p.extract||''}))}
+const wikiCtx=r=>`Resultados de búsqueda (Wikipedia en español, consultados ahora; no son noticias en tiempo real). Úsalos si ayudan, cita la fuente y di si no bastan:\n`+r.map((x,i)=>`${i+1}. ${x.title}: ${x.text}\n   ${x.url}`).join('\n');
+
+/* ---------- Voz ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let REC=null,SPK=0;
+function listen(){
+ if(!SR){toast('Este navegador no soporta reconocimiento de voz. Usa Chrome.',4000);return}
+ if(BUSY){toast('Espera a que termine la respuesta');return}
+ if(REC){try{REC.stop()}catch{}return}
+ stopSpeak();
+ const r=new SR();REC=r;r.lang=S.lang;r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+ let final='',gotAny=false;
+ r.onstart=()=>setState('listening');
+ r.onresult=e=>{gotAny=true;let t='';for(let i=0;i<e.results.length;i++){t+=e.results[i][0].transcript;if(e.results[i].isFinal)final=t}$('#inp').value=t;autosize();Orb.pulse()};
+ r.onerror=e=>{const M={'not-allowed':'Permiso de micrófono denegado. Actívalo en Chrome → Configuración del sitio → Micrófono.','service-not-allowed':'El reconocimiento de voz no está permitido en este contexto.','no-speech':'No te escuché. Inténtalo de nuevo.','audio-capture':'No se detecta micrófono.','network':'El reconocimiento de voz necesita Internet.','aborted':''};const m=e.error in M?M[e.error]:'Error de voz: '+e.error;if(m)toast(m,4500)};
+ r.onend=()=>{REC=null;if(STATE==='listening')setState('idle');const t=(final||'').trim();if(t)send(t,{voice:true});else if(gotAny&&$('#inp').value.trim())toast('Revisa el texto y pulsa enviar.')};
+ try{r.start()}catch(e){REC=null;toast('No se pudo iniciar el micrófono: '+e.message)}
+}
+function pickVoice(){const v=speechSynthesis.getVoices();return v.find(x=>x.voiceURI===S.voiceURI)||v.find(x=>x.lang===S.lang)||v.find(x=>x.lang&&x.lang.toLowerCase().startsWith('es'))||null}
+function speak(text){
+ if(!('speechSynthesis'in window)){setState('idle');return}
+ speechSynthesis.cancel();const id=++SPK;
+ let clean=String(text).replace(/```[\s\S]*?```/g,' (bloque de código omitido). ').replace(/https?:\/\/\S+/g,' enlace ').replace(/[*_#`>|]/g,'').replace(/\s+/g,' ').trim();
+ if(clean.length>2500){clean=clean.slice(0,2500);toast('Leo solo los primeros 2500 caracteres; el resto está en pantalla.',4000)}
+ const sents=clean.match(/[^.!?;:]+[.!?;:]*/g)||[clean];const chunks=[];let cur='';
+ for(const s of sents){if((cur+s).length>180&&cur){chunks.push(cur);cur=s}else cur+=s}if(cur)chunks.push(cur);
+ if(!chunks.length){setState('idle');return}
+ setState('speaking');const v=pickVoice();
+ chunks.forEach((c,i)=>{const u=new SpeechSynthesisUtterance(c);u.lang=S.lang;u.rate=+S.rate||1;if(v)u.voice=v;u.onboundary=()=>Orb.pulse();u.onstart=()=>Orb.pulse();
+  u.onend=()=>{if(id===SPK&&i===chunks.length-1)setState('idle')};u.onerror=()=>{if(id===SPK&&i===chunks.length-1)setState('idle')};speechSynthesis.speak(u)});
+}
+function stopSpeak(){SPK++;try{speechSynthesis.cancel()}catch{}if(STATE==='speaking')setState('idle')}
+
+/* ---------- Esfera holográfica (canvas, reacciona al estado real) ---------- */
+const Orb=(()=>{
+ const cv=$('#orb'),cx=cv.getContext('2d');let W=0,H=0,pts=[],N=0,t=0,pls=0,last=0,slow=0;
+ function build(n){N=n;pts=[];const g=Math.PI*(3-Math.sqrt(5));for(let i=0;i<n;i++){const y=1-2*(i+.5)/n,r=Math.sqrt(1-y*y),a=g*i;pts.push([Math.cos(a)*r,y,Math.sin(a)*r,Math.random()])}}
+ function size(){const d=Math.min(window.devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;if(!W||!H)return;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}
+ function frame(ts){
+  requestAnimationFrame(frame);
+  if(document.hidden||!W||!H||!$('#v-home').classList.contains('on'))return;
+  const lp=lowP(),fps=lp?15:30;if(ts-last<1000/fps-3)return;
+  const dt=Math.min(ts-last,100);last=ts;
+  if(!lp&&dt>46){if(++slow>40&&N>160){build(Math.floor(N*.7));slow=0}}else slow=Math.max(0,slow-1);
+  const want=lp?170:420;if(lp&&N>want)build(want);else if(!lp&&N<want&&slow===0&&dt<40&&N===170)build(want);
+  t+=dt/1000;pls*=.9;const st=STATE;
+  const spin=st==='processing'?1.5:st==='listening'?.55:st==='speaking'?.5:.22;
+  let amp=1+.02*Math.sin(t*1.3);
+  if(st==='listening')amp=1+.05*Math.sin(t*5)+.06*pls;
+  else if(st==='processing')amp=1+.03*Math.sin(t*9);
+  else if(st==='speaking')amp=1+.1*pls;
+  cx.clearRect(0,0,W,H);
+  const R=Math.min(W,H)*.34,X=W/2,Y=H/2;
+  if(!lp){const g=cx.createRadialGradient(X,Y,R*.15,X,Y,R*1.55);g.addColorStop(0,`rgba(0,229,255,${.12+.08*pls+(st==='idle'?0:.05)})`);g.addColorStop(1,'rgba(0,0,0,0)');cx.fillStyle=g;cx.fillRect(0,0,W,H)}
+  const ay=t*spin,ax=.35,cy_=Math.cos(ay),sy=Math.sin(ay),cxx=Math.cos(ax),sx=Math.sin(ax);
+  cx.fillStyle='#00e5ff';
+  for(let k=0;k<N;k++){const p=pts[k];let x=p[0]*cy_+p[2]*sy,z=-p[0]*sy+p[2]*cy_,y=p[1]*cxx-z*sx;z=p[1]*sx+z*cxx;
+   let d=1;if(st==='processing')d=1+.09*Math.sin(t*5+p[3]*25);else if(st==='speaking')d=1+.12*pls*Math.sin(p[3]*30+t*9);
+   const sc=3/(3-z*.9),px=X+x*R*amp*d*sc,py=Y+y*R*amp*d*sc,dep=(z+1)/2;
+   cx.globalAlpha=.18+.82*dep;const s=(lp?1.6:1.2)+1.5*dep;cx.fillRect(px-s/2,py-s/2,s,s)}
+  cx.globalAlpha=1;cx.lineWidth=1.2;cx.strokeStyle='#00e5ff';
+  if(st==='listening'){const q=(t*1.1)%1;cx.globalAlpha=1-q;cx.beginPath();cx.arc(X,Y,R*(1.08+.3*q),0,6.283);cx.stroke()}
+  else if(st==='processing'){cx.globalAlpha=.8;cx.beginPath();cx.arc(X,Y,R*1.18,t*3,t*3+1.7);cx.stroke();cx.beginPath();cx.arc(X,Y,R*1.18,t*3+3.14,t*3+4.84);cx.stroke()}
+  else if(st==='speaking'){cx.globalAlpha=.25+.5*pls;cx.beginPath();cx.arc(X,Y,R*(1.1+.12*pls),0,6.283);cx.stroke()}
+  cx.globalAlpha=1;
+ }
+ build(420);new ResizeObserver(size).observe(cv);size();requestAnimationFrame(frame);
+ return {pulse(){pls=1},size};
+})();
+
+/* ---------- Proyectos largos: generación por partes ---------- */
+const Run={active:false,pause:false,stop:false,ctrl:null,wait:'',live:'',lock:null};
+const segKey=(pid,n)=>`seg:${pid}:${String(n).padStart(6,'0')}`;
+const TOKP={breve:1200,detallado:2500,extenso:4096,maxima:8192};
+const FH=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+const norm=s=>s.toLowerCase().replace(/\s+/g,' ').trim();
+let PJ=null;
+async function newProject({title,kind,brief,mode,target}){const p={id:uid(),title:title||brief.slice(0,40),kind,brief,mode,target,outline:'',sums:[],segCount:0,chars:0,words:0,tail:'',trunc:false,seen:[],files:[],status:'new',lastError:'',created:Date.now(),updated:Date.now()};await DB.put('projects',p);return p}
+function projSystem(p){return `Eres JARVIS AI trabajando en un proyecto de generación larga por partes. Produce ÚNICAMENTE el contenido de la obra: sin saludos, sin comentarios sobre lo que haces, sin preguntas al usuario. Mantén coherencia absoluta con el esquema, los nombres, el estilo y lo ya escrito. Nunca repitas texto previo. Escribe en español salvo que la instrucción indique otro idioma.`
+ +(p.kind==='code'?` Estás creando un programa: organiza TODO por archivos. Cada archivo empieza con una línea exacta "### ARCHIVO: ruta/nombre.ext" seguida de un bloque de código con fence de tres acentos graves y el contenido COMPLETO del archivo. Nunca uses "..." ni "// resto del código". Si un archivo queda cortado por el límite, en la siguiente petición continuarás exactamente desde ese punto dentro del mismo bloque.`:'')
+ +` Al terminar cada parte (si NO te cortó el límite), añade en una línea nueva [[RESUMEN: una frase con lo cubierto y lo que sigue]]. Si TODA la obra queda completa, añade después, en otra línea, [[FIN]].`}
+function segPrompt(p,cont,n){
+ const sums=p.sums.slice(-10).map(s=>`- Parte ${s.n}: ${s.t}`).join('\n')||'(aún no hay partes)';
+ let t=`PROYECTO: ${p.title}\nTIPO: ${p.kind==='code'?'programa de software (por archivos)':p.kind==='doc'?'documento':'texto/narrativa'}\n\nINSTRUCCIÓN ORIGINAL DEL USUARIO:\n${p.brief}\n\nOBJETIVO/EXTENSIÓN: ${p.target||'la que el proyecto requiera'}\n\nESQUEMA Y DECISIONES (memoria del proyecto):\n${(p.outline||'(sin esquema)').slice(0,5000)}\n\nPROGRESO:\n${sums}\n`;
+ if(p.tail)t+=`\nÚLTIMO FRAGMENTO YA ESCRITO (solo para continuidad; NO lo repitas):\n"""\n${p.tail}\n"""\n`;
+ t+=cont?`\nTAREA: el fragmento anterior quedó cortado por el límite de longitud. Continúa EXACTAMENTE desde la última palabra, sin repetir nada, sin saludar ni comentar.`
+  :p.segCount===0?`\nTAREA: escribe la PARTE 1: comienza la obra siguiendo el esquema, de forma completa y detallada.`
+  :`\nTAREA: escribe la PARTE ${n}: la siguiente sección del esquema, completa y detallada. No repitas contenido previo. Si todo el esquema ya está cubierto, cierra la obra y añade [[FIN]].`;
+ return t;
+}
+function trimOverlap(tail,t){if(!tail)return t;const max=Math.min(400,tail.length,t.length);for(let k=max;k>=25;k--){if(tail.endsWith(t.slice(0,k)))return t.slice(k)}return t}
+function cleanSegment(p,raw,cont){
+ let t=raw;const fin=/\[\[\s*FIN\s*\]\]/i.test(t);const m=t.match(/\[\[\s*RESUMEN\s*:([\s\S]*?)\]\]/i);const sum=m?m[1].trim():null;
+ t=t.replace(/\[\[\s*RESUMEN[\s\S]*?\]\]/gi,'').replace(/\[\[\s*FIN\s*\]\]/gi,'').replace(/\[\[[^\]]*$/,'');
+ if(cont)t=trimOverlap(p.tail,t);
+ const hs=[],newFiles=[];
+ if(p.kind==='code'){
+  const parts=t.split(/(?=^### ARCHIVO:\s)/m);let out='';
+  for(const part of parts){const mm=part.match(/^### ARCHIVO:\s*(.+)/);if(mm){const path=mm[1].trim();if(p.files.includes(path)||newFiles.includes(path))continue;newFiles.push(path)}out+=part}
+  t=out;
+ }else{
+  const seen=new Set(p.seen);const ps=t.split(/(\n{2,})/);let out='';
+  for(let i=0;i<ps.length;i+=2){const para=ps[i],sep=ps[i+1]||'';const n=norm(para);if(n.length>=80){const h=FH(n);if(seen.has(h))continue;seen.add(h);hs.push(h)}out+=para+sep}
+  t=out;
+ }
+ return {text:t,fin,sum,hs,newFiles,rawLen:raw.length};
+}
+async function commit(p,raw,cont,finish,partial){
+ const c=cleanSegment(p,raw,cont);
+ const truncated=(finish==='length'||partial)&&!c.fin;
+ let text=c.text;if(!cont&&p.segCount>0)text='\n\n'+text.trimStart();else if(p.segCount===0)text=text.trimStart();
+ const added=c.text.trim().length;const ratio=added/Math.max(1,c.rawLen);
+ if(added<5&&!c.fin){p.updated=Date.now();await DB.put('projects',p);return {added:0,finished:false,truncated:false}}
+ const n=p.segCount+1;
+ await DB.put('kv',{id:segKey(p.id,n),text,h:c.hs,files:c.newFiles});
+ p.segCount=n;p.chars+=text.length;p.words+=(text.match(/\S+/g)||[]).length;p.tail=(p.tail+text).slice(-1800);
+ p.seen=p.seen.concat(c.hs);p.files=p.files.concat(c.newFiles);if(c.sum)p.sums.push({n,t:c.sum});
+ p.trunc=truncated;if(c.fin){p.status='done';p.trunc=false}p.updated=Date.now();
+ await DB.put('projects',p);
+ return {added:ratio<.15?0:added,finished:c.fin,truncated};
+}
+async function genSegment(p){
+ const cont=!!p.trunc,n=p.segCount+1;let raw='';
+ try{
+  const r=await llm({system:projSystem(p),messages:[{role:'user',text:segPrompt(p,cont,n)}],maxTokens:TOKP[p.mode]||4096,signal:Run.ctrl.signal,noThink:true,
+   onText:t=>{raw+=t;Run.live=raw;Orb.pulse();liveTick()}});
+  return await commit(p,raw,cont,r.finish,false);
+ }catch(e){
+  if(raw.replace(/\[\[[^\]]*$/,'').trim().length>150)await commit(p,raw,cont,'length',true);
+  throw e;
+ }
+}
+async function makeOutline(p){
+ Run.wait='Creando esquema del proyecto…';projUI();let t='';
+ await llm({system:'Eres JARVIS AI, planificador editorial y técnico. Responde solo con el plan.',messages:[{role:'user',text:`Crea el plan maestro de este proyecto largo (${p.kind==='code'?'programa de software':'obra escrita'}).\n\nInstrucción:\n${p.brief}\nObjetivo/extensión: ${p.target||'la que el proyecto requiera'}\n\nIncluye: 1) esquema numerado completo de ${p.kind==='code'?'archivos y módulos con su responsabilidad y la tecnología elegida':'capítulos o secciones, una línea cada uno'}; 2) ${p.kind==='code'?'decisiones técnicas clave y dependencias':'personajes, conceptos o datos clave, y estilo/tono'}. Máximo 700 palabras. Solo el plan.`}],maxTokens:2000,signal:Run.ctrl.signal,noThink:true,onText:x=>{t+=x}});
+ p.outline=t.trim();await DB.put('projects',p);
+}
+const retryable=e=>e.status===429||e.status>=500||e.isNet;
+async function runProject(p,untilDone){
+ if(Run.active){toast('Ya hay una generación en curso');return}
+ if(!KEYS[S.provider]){toast('Configura primero la IA en Sistema → Ajustes de IA',4000);return}
+ Run.active=true;Run.pause=false;Run.stop=false;Run.ctrl=new AbortController();Run.live='';p.status='running';p.lastError='';await DB.put('projects',p);setState('processing');projUI();
+ try{if(S.wake&&navigator.wakeLock)Run.lock=await navigator.wakeLock.request('screen')}catch{}
+ let parts=0,stall=0,fails=0;
+ try{
+  if(!p.outline)await makeOutline(p);
+  while(!Run.pause&&!Run.stop){
+   const lim=+S.maxParts;if(lim>0&&parts>=lim){p.lastError=`Se alcanzó el máximo de ${lim} partes por tanda (configurable en Ajustes). Pulsa Continuar para seguir.`;break}
+   Run.wait=`Generando parte ${p.segCount+1}${p.trunc?' (continuación)':''}…`;Run.live='';projUI();
+   let r;
+   try{r=await genSegment(p);fails=0}
+   catch(e){
+    if(e.name==='AbortError')break;
+    if(retryable(e)&&fails<3){const w=[5,15,45][fails++];for(let s=w;s>0;s--){Run.wait=`Error temporal (${e.message.slice(0,60)}). Reintento en ${s}s…`;projUI();await sleep(1000,Run.ctrl.signal)}continue}
+    throw e;
+   }
+   parts++;
+   if(r.finished){break}
+   stall=r.added===0?stall+1:0;
+   if(stall>=2){p.lastError='La IA empezó a repetir contenido o no aportó texto nuevo; detuve la generación. Revisa el esquema y pulsa Continuar.';break}
+   if(!untilDone&&!r.truncated)break;
+  }
+  p.status=p.status==='done'?'done':'paused';
+ }catch(e){
+  if(e.name==='AbortError')p.status='paused';
+  else{p.status='error';p.lastError=e.message}
+ }
+ if(p.lastError&&p.status==='paused'&&!Run.stop&&!Run.pause){}
+ await DB.put('projects',p);
+ Run.active=false;Run.wait='';try{if(Run.lock)Run.lock.release()}catch{}Run.lock=null;setState('idle');projUI();
+ if(p.status==='done')toast('Proyecto completado: '+p.title,4000);
+}
+async function projectParts(p){const out=[];for(let i=1;i<=p.segCount;i++){const s=await DB.get('kv',segKey(p.id,i));if(s)out.push(s.text)}return out}
+async function retryLast(p){
+ if(p.segCount<1){toast('No hay partes que rehacer');return}
+ const n=p.segCount;const s=await DB.get('kv',segKey(p.id,n));
+ if(s){p.chars-=s.text.length;p.words-=(s.text.match(/\S+/g)||[]).length;const rm=new Set(s.h||[]);p.seen=p.seen.filter(h=>!rm.has(h));const rf=new Set(s.files||[]);p.files=p.files.filter(f=>!rf.has(f))}
+ await DB.del('kv',segKey(p.id,n));p.segCount=n-1;p.sums=p.sums.filter(x=>x.n!==n);p.status='paused';p.trunc=false;p.lastError='';
+ let tail='';for(let i=p.segCount;i>=1&&tail.length<1800;i--){const x=await DB.get('kv',segKey(p.id,i));if(x)tail=x.text+tail}p.tail=tail.slice(-1800);
+ await DB.put('projects',p);projUI();toast('Última parte descartada; pulsa Continuar para rehacerla');
+}
+async function deleteProject(p){for(let i=1;i<=p.segCount+1;i++)await DB.del('kv',segKey(p.id,i));await DB.del('projects',p.id)}
+const STP={new:'nuevo',running:'generando',paused:'pausado',error:'error',done:'completo'};
+function parseFiles(text){const out=[];const re=/^### ARCHIVO:\s*(.+)$/gm;const idx=[];let m;while((m=re.exec(text)))idx.push({path:m[1].trim(),at:m.index,end:re.lastIndex});
+ idx.forEach((x,k)=>{const chunk=text.slice(x.end,k+1<idx.length?idx[k+1].at:text.length);const a=chunk.indexOf('```');if(a<0){out.push({path:x.path,code:chunk.trim()});return}const nl=chunk.indexOf('\n',a);const b=chunk.lastIndexOf('```');out.push({path:x.path,code:chunk.slice(nl+1,b>a?b:undefined).replace(/\n$/,'')})});return out}
+let liveT=0;function liveTick(){if(liveT)return;liveT=setTimeout(()=>{liveT=0;const el=$('#plive');if(el)el.textContent=Run.live.slice(-2500)||el.textContent;const w=$('#pwait');if(w)w.textContent=Run.wait},400)}
+function projUI(){if(PJ&&$('#projView'))renderProjectView($('#sheetBody'))}
+
+/* ---------- Herramientas ---------- */
+const TOOLS=[
+ {id:'proy',n:'Proyectos largos',d:'Libros, código y documentos por partes',g:'▤'},
+ {id:'code',n:'Programación',d:'Generar, analizar y depurar código',g:'</>'},
+ {id:'math',n:'Matemáticas y calculadora',d:'Cálculo local y explicación con IA',g:'∑'},
+ {id:'web',n:'Búsqueda web',d:'Wikipedia; Google si usas Gemini',g:'⌕'},
+ {id:'text',n:'Textos',d:'Redactar, traducir, corregir, resumir',g:'✎'},
+ {id:'files',n:'Archivos',d:'Elegir y analizar texto o código',g:'▢'},
+ {id:'notes',n:'Notas',d:'Notas guardadas en el teléfono',g:'☰'},
+ {id:'mem',n:'Memoria',d:'Preferencias que JARVIS recuerda',g:'◈'},
+ {id:'clip',n:'Portapapeles',d:'Copiar lo generado',g:'⧉'},
+ {id:'media',n:'Imágenes y video',d:'Crear imágenes y videos',g:'◧'},
+ {id:'phone',n:'Teléfono',d:'Abrir apps y ajustes, recordatorios',g:'☏'},
+ {id:'sys',n:'Sistema',d:'Estado del dispositivo',g:'▣'},
+ {id:'cfg',n:'Configuración',d:'IA, voz, privacidad',g:'⚙'}];
+$('#toolGrid').innerHTML=TOOLS.map(t=>`<button class="card" data-tool="${t.id}"><span class="gl">${t.g}</span><b>${t.n}</b><span>${t.d}</span></button>`).join('');
+function openSheet(title,fn){$('#sheetTitle').textContent=title;$('#sheet').hidden=false;const b=$('#sheetBody');b.scrollTop=0;fn(b)}
+function closeSheet(){$('#sheet').hidden=true;PJ=null}
+function goChat(){closeSheet();goTab('chat')}
+function openTool(id){
+ if(id==='sys'){goTab('sys');$('#sysBody details').open=true;return}
+ if(id==='cfg'){goTab('sys');$$('#sysBody details').forEach((d,i)=>d.open=i===1);return}
+ const T=TOOLS.find(t=>t.id===id);
+ openSheet(T.n,b=>({proy:toolProjects,code:toolCode,math:toolMath,web:toolWeb,text:toolText,files:toolFiles,notes:toolNotes,mem:toolMem,clip:toolClip,phone:toolPhone,media:toolMedia}[id])(b));
+}
+function presetTool(b,{intro,acts,ph}){
+ b.innerHTML=`<p class="muted">${intro}</p><textarea id="pt" rows="7" placeholder="${ph}"></textarea><div class="row" style="margin-top:10px">${acts.map((a,i)=>`<button data-a="${i}" class="${i===0?'pri':''}">${a.l}</button>`).join('')}</div><p class="muted">Estas acciones envían tu texto a la IA configurada con instrucciones especializadas y abren la conversación.</p>`;
+ $$('[data-a]',b).forEach(x=>x.onclick=()=>{const a=acts[+x.dataset.a],t=$('#pt',b).value.trim();if(!t){toast('Escribe o pega el contenido primero');return}goChat();send(`${a.p}\n\n${t}`,{preset:a.s})});
+}
+const toolCode=b=>presetTool(b,{intro:'Pega código o describe qué quieres construir.',ph:'Código o descripción…',acts:[
+ {l:'Generar código',p:'Escribe código completo y funcional para lo siguiente:',s:'Ingeniero de software sénior. Entrega código completo, organizado por archivos con su ruta, con breves explicaciones y cómo ejecutarlo.'},
+ {l:'Analizar',p:'Analiza este código: qué hace, calidad, riesgos y mejoras:',s:'Revisor de código sénior. Sé concreto, señala problemas reales y propón correcciones.'},
+ {l:'Depurar',p:'Encuentra y corrige los errores de este código o este mensaje de error:',s:'Experto en depuración. Identifica la causa raíz, explica por qué falla y da el código corregido.'}]});
+const toolText=b=>presetTool(b,{intro:'Pega un texto o escribe lo que necesitas.',ph:'Texto…',acts:[
+ {l:'Redactar',p:'Redacta un texto bien escrito a partir de esta indicación:',s:'Redactor profesional; tono claro y adecuado al contexto.'},
+ {l:'Resumir',p:'Resume este texto conservando las ideas clave:',s:'Resume con fidelidad, sin añadir datos nuevos.'},
+ {l:'Corregir',p:'Corrige ortografía, gramática y estilo, y muestra el texto corregido:',s:'Corrector profesional; conserva el sentido y la voz del autor.'},
+ {l:'Traducir → inglés',p:'Traduce al inglés:',s:'Traductor profesional; natural y fiel.'},
+ {l:'Traducir → español',p:'Traduce al español:',s:'Traductor profesional; natural y fiel.'}]});
+function toolMath(b){
+ b.innerHTML=`<label class="l">EXPRESIÓN (+ − × ÷ ^ % ! ( ), sqrt sin cos tan log ln abs exp, pi, e)</label><input id="ce" placeholder="Ej.: (12.5*4)^2 / sqrt(81)" inputmode="text"><div class="row" style="margin:10px 0"><button class="pri" id="cgo">Calcular (local)</button><button id="cai">Resolver paso a paso con IA</button></div><div class="box"><b id="cres" style="font-size:22px">—</b><div class="muted">Las funciones trigonométricas usan radianes. El cálculo es local y no usa IA.</div></div><div id="chist" class="muted"></div>`;
+ const H=[];$('#cgo',b).onclick=()=>{const e=$('#ce',b).value;try{const r=calcEval(e);$('#cres',b).textContent=String(r);H.unshift(`${e} = ${r}`);$('#chist',b).innerHTML=H.slice(0,8).map(esc).join('<br>')}catch(x){$('#cres',b).textContent='Error: '+x.message}};
+ $('#cai',b).onclick=()=>{const e=$('#ce',b).value.trim();if(!e){toast('Escribe un problema');return}goChat();send('Resuelve y explica el procedimiento paso a paso: '+e,{preset:'Profesor de matemáticas y ciencias. Explica cada paso con claridad y verifica el resultado.'})};
+}
+function toolWeb(b){
+ b.innerHTML=`<div class="row"><input class="f" id="wq" placeholder="Buscar en Wikipedia (es)…"><button class="pri" id="wgo">Buscar</button></div><p class="muted">Wikipedia es una fuente enciclopédica, no de noticias de última hora. Con Gemini, activa «Búsqueda web» junto al chat para usar búsqueda de Google (con fuentes) en tus preguntas.</p><div id="wres"></div>`;
+ const go=async()=>{const q=$('#wq',b).value.trim();if(!q)return;$('#wres',b).innerHTML='<p class="muted">Buscando…</p>';try{const r=await wiki(q);$('#wres',b).innerHTML=r.length?r.map(x=>`<div class="box"><b>${esc(x.title)}</b><div class="muted">${esc(x.text.slice(0,420))}…</div><a href="${esc(x.url)}" target="_blank" rel="noopener">Abrir artículo</a></div>`).join('')+'<button id="wai" class="pri">Preguntar a JARVIS con estos resultados</button>':'<p class="muted">Sin resultados.</p>';const w=$('#wai',b);if(w)w.onclick=()=>{goChat();send(q,{extra:wikiCtx(r)})}}catch(e){$('#wres',b).innerHTML=`<p style="color:var(--er)">No se pudo buscar: ${esc(e.message)}</p>`}};
+ $('#wgo',b).onclick=go;$('#wq',b).onkeydown=e=>{if(e.key==='Enter')go()};
+}
+function toolFiles(b){
+ b.innerHTML=`<p class="muted">Elige un archivo con el selector seguro de Android. Formatos compatibles: texto, Markdown, CSV, JSON, HTML, XML, registros y código fuente. PDF e imágenes: <b>pendiente</b> (aún no implementado).</p><input type="file" id="fi" accept=".txt,.md,.csv,.json,.html,.htm,.css,.js,.ts,.py,.java,.kt,.c,.cpp,.h,.cs,.go,.rs,.php,.rb,.sh,.xml,.yml,.yaml,.log,.ini,.sql,text/*"><div id="fres"></div>`;
+ $('#fi',b).onchange=async e=>{const f=e.target.files[0];if(!f)return;const r=$('#fres',b);
+  if(f.size>3e6){r.innerHTML='<p style="color:var(--er)">El archivo supera 3 MB; elige uno más pequeño.</p>';return}
+  if(/pdf|image/.test(f.type)){r.innerHTML='<p style="color:var(--er)">PDF e imágenes aún no están soportados.</p>';return}
+  let t=await f.text();if(/\u0000/.test(t.slice(0,2000))){r.innerHTML='<p style="color:var(--er)">Parece un archivo binario; no se puede leer como texto.</p>';return}
+  const cut=t.length>60000;if(cut)t=t.slice(0,60000);
+  r.innerHTML=`<div class="box"><b>${esc(f.name)}</b><div class="muted">${fmtN(f.size)} bytes · ${fmtN(t.length)} caracteres${cut?' (recortado a 60 000 para no saturar la memoria ni la cuota)':''}</div><pre class="live">${esc(t.slice(0,600))}${t.length>600?'…':''}</pre><button class="pri" id="fat">Adjuntar al chat</button></div>`;
+  $('#fat',b).onclick=()=>{setAtt({name:f.name,text:t});goChat();toast('Adjunto listo: escribe qué quieres hacer con él')}};
+}
+async function toolNotes(b){
+ const draw=async()=>{const ns=(await DB.all('notes')).sort((a,b)=>b.updated-a.updated);
+  b.innerHTML=`<input id="nt" placeholder="Título (opcional)"><textarea id="nx" rows="4" placeholder="Escribe una nota…" style="margin-top:8px"></textarea><div class="row" style="margin:8px 0 14px"><button class="pri" id="nsv">Guardar nota</button></div>${ns.map(n=>`<div class="box"><b>${esc(n.title||'Nota')}</b><div class="muted" style="white-space:pre-wrap">${esc(n.text)}</div><div class="row" style="margin-top:8px"><button data-c="${n.id}">Copiar</button><button data-ai="${n.id}">Preguntar a JARVIS</button><button class="dng" data-d="${n.id}">Borrar</button></div></div>`).join('')||'<p class="muted">No hay notas.</p>'}`;
+  $('#nsv',b).onclick=async()=>{const x=$('#nx',b).value.trim();if(!x)return;await DB.put('notes',{id:uid(),title:$('#nt',b).value.trim()||x.slice(0,40),text:x,updated:Date.now()});draw()};
+  $$('[data-c]',b).forEach(e=>e.onclick=()=>copyText(ns.find(n=>n.id===e.dataset.c).text));
+  $$('[data-ai]',b).forEach(e=>e.onclick=()=>{const n=ns.find(x=>x.id===e.dataset.ai);goChat();send('Sobre esta nota mía, ayúdame a mejorarla y a decidir próximos pasos:\n\n'+n.text)});
+  $$('[data-d]',b).forEach(e=>e.onclick=async()=>{if(await confirmBox('Borrar nota','Esta acción no se puede deshacer.')){await DB.del('notes',e.dataset.d);draw()}})};
+ draw();
+}
+const saveMem=()=>DB.put('kv',{id:'mem',items:MEM});
+function toolMem(b){
+ const draw=()=>{b.innerHTML=`<p class="muted">Lo que anotes aquí se guarda solo en este teléfono y, si «Usar memoria» está activo, se envía a la IA junto con tus mensajes para personalizar respuestas. No guardes contraseñas.</p><label class="row" style="margin-bottom:10px"><input type="checkbox" id="mon" ${S.memoryOn?'checked':''}> Usar memoria en las conversaciones</label><div class="row"><input class="f" id="mi" placeholder="Ej.: Prefiero respuestas cortas"><button class="pri" id="madd">Añadir</button></div>${MEM.map((m,i)=>`<div class="box row"><span class="f">${esc(m)}</span><button class="dng" data-d="${i}">Borrar</button></div>`).join('')||'<p class="muted">Memoria vacía.</p>'}`;
+  $('#mon',b).onchange=e=>{S.memoryOn=e.target.checked;saveS()};
+  $('#madd',b).onclick=async()=>{const v=$('#mi',b).value.trim();if(v){MEM.push(v);await saveMem();draw()}};
+  $$('[data-d]',b).forEach(e=>e.onclick=async()=>{MEM.splice(+e.dataset.d,1);await saveMem();draw()})};draw();
+}
+function toolClip(b){
+ const last=[...CH.msgs].reverse().find(m=>m.role==='assistant'&&m.text);
+ b.innerHTML=`<div class="row"><button id="c1" ${last?'':'disabled'}>Copiar última respuesta</button><button id="c2" ${CH.msgs.length?'':'disabled'}>Copiar conversación</button><button id="c3">Pegar en el mensaje</button></div><p class="muted">«Pegar» necesita que Chrome permita leer el portapapeles.</p>`;
+ $('#c1',b).onclick=()=>copyText(last.text);
+ $('#c2',b).onclick=()=>copyText(CH.msgs.map(m=>(m.role==='user'?'Yo: ':'JARVIS: ')+m.text).join('\n\n'));
+ $('#c3',b).onclick=async()=>{try{const t=await navigator.clipboard.readText();$('#inp').value=t;autosize();goChat()}catch{toast('Chrome no permitió leer el portapapeles')}};
+}
+
+/* ---------- Teléfono: apps, ajustes, batería, recordatorios ---------- */
+const AS=a=>`intent:#Intent;action=android.settings.${a};end`;
+const FBK=encodeURIComponent(location.href.split('#')[0]+'#jv');
+const LA=p=>`intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${p};S.browser_fallback_url=${FBK};end`;
+const APPS=[{n:'Ajustes',u:AS('SETTINGS'),k:['ajustes','configuracion','settings']},{n:'Wi-Fi',u:AS('WIFI_SETTINGS'),k:['wifi','wi-fi','internet','red']},{n:'Bluetooth',u:AS('BLUETOOTH_SETTINGS'),k:['bluetooth']},{n:'Pantalla',u:AS('DISPLAY_SETTINGS'),k:['pantalla','brillo']},{n:'Sonido',u:AS('SOUND_SETTINGS'),k:['sonido','volumen']},{n:'Ahorro de batería',u:AS('BATTERY_SAVER_SETTINGS'),k:['ahorro de bateria','ahorro de energia','bateria']},{n:'Aplicaciones',u:AS('APPLICATION_SETTINGS'),k:['aplicaciones','apps']},
+ {n:'WhatsApp',u:LA('com.whatsapp'),k:['whatsapp','wasap','guasap','whats']},{n:'YouTube',u:LA('com.google.android.youtube'),k:['youtube','yutu']},{n:'TikTok',u:[LA('com.zhiliaoapp.musically'),LA('com.ss.android.ugc.trill')],k:['tiktok','tik tok']},{n:'Instagram',u:LA('com.instagram.android'),k:['instagram','insta']},{n:'Facebook',u:LA('com.facebook.katana'),k:['facebook','face']},{n:'Telegram',u:LA('org.telegram.messenger'),k:['telegram']},{n:'Spotify',u:LA('com.spotify.music'),k:['spotify']},{n:'Chrome',u:LA('com.android.chrome'),k:['chrome','navegador']},{n:'Gmail',u:LA('com.google.android.gm'),k:['gmail','correo']},{n:'Mapas',u:LA('com.google.android.apps.maps'),k:['mapas','maps','google maps']},{n:'Play Store',u:LA('com.android.vending'),k:['play store','tienda de aplicaciones','google play']},
+ {n:'Teléfono (marcador)',u:'tel:',k:['telefono','marcador','llamadas']},{n:'Cámara',u:'intent:#Intent;action=android.media.action.IMAGE_CAPTURE;end',k:['camara','foto']}];
+const nrm=x=>String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+function findApp(q){q=nrm(q);return APPS.find(a=>(a.k||[]).some(k=>q===k))||APPS.find(a=>(a.k||[]).some(k=>q.includes(k)))||null}
+async function openApp(a,i=0){
+ const list=Array.isArray(a.u)?a.u:[a.u];
+ if(S.confirmOpen&&i===0&&!await confirmBox('Abrir «'+a.n+'»','JARVIS saldrá de la app para abrirla. ¿Continuar?'))return;
+ toast('Abriendo '+a.n+'…',2500);
+ try{location.href=list[i]}catch(e){toast('No se pudo abrir: '+e.message);return}
+ setTimeout(async()=>{if(document.hidden)return;const next=i+1<list.length;
+  const ok=await modal({title:'No se abrió «'+a.n+'»',body:'Chrome bloqueó el salto automático o la app no está instalada. '+(next?'Puedo probar con otra versión de la app.':'Toca para reintentar.'),okText:next?'Probar otra versión':'Reintentar',cancelText:'Cancelar'});
+  if(ok)openApp(a,next?i+1:i)},1500);
+}
+async function battery(){try{if(!navigator.getBattery)return null;const b=await navigator.getBattery();return {lvl:Math.round(b.level*100),chg:b.charging}}catch{return null}}
+async function addReminder(text,at){REM.push({id:uid(),text,at,done:false});await DB.put('kv',{id:'reminders',list:REM});try{if('Notification'in window&&Notification.permission==='default')Notification.requestPermission()}catch{}}
+async function fireRem(r){toast('⏰ '+r.text,8000);if(navigator.vibrate)navigator.vibrate([200,100,200]);try{if('Notification'in window&&Notification.permission==='granted'){const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)reg.showNotification('JARVIS AI',{body:r.text,vibrate:[200,100,200]});else new Notification('JARVIS AI',{body:r.text})}}catch{}}
+function checkRem(){const now=Date.now();let ch=false;for(const r of REM)if(!r.done&&r.at<=now){r.done=true;ch=true;fireRem(r)}if(ch)DB.put('kv',{id:'reminders',list:REM})}
+async function toolPhone(b){
+ const bt=await battery();
+ const draw=()=>{b.innerHTML=`<div class="box"><b>Batería</b><div>${bt?`${bt.lvl}% ${bt.chg?'· cargando':''}`:'No disponible en este navegador'}</div></div>
+ <div class="box"><b>Abrir apps y ajustes</b><p class="muted">Son enlaces de Android abiertos desde Chrome: <b>no los he probado en tu equipo</b> y algunos pueden ser bloqueados. JARVIS no tiene acceso root ni control total del teléfono.</p><label class="row" style="margin-bottom:10px"><input type="checkbox" id="pcf" ${S.confirmOpen?'checked':''}> Pedir confirmación antes de abrir</label><div class="row">${APPS.map((a,i)=>`<button data-app="${i}">${esc(a.n)}</button>`).join('')}</div></div>
+ <div class="box"><b>Recordatorios</b><p class="muted">Suenan solo mientras la app esté abierta (no hay servidor de notificaciones). Para alarmas fiables usa la app Reloj.</p><div class="row"><input class="f" id="rt" placeholder="¿Qué te recuerdo?"><input id="rm" type="number" min="1" value="10" style="width:84px"><span class="muted">min</span><button class="pri" id="radd">Crear</button></div>${REM.filter(r=>!r.done).map(r=>`<div class="row" style="margin-top:8px"><span class="f">${esc(r.text)} · ${new Date(r.at).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})}</span><button class="dng" data-rd="${r.id}">Quitar</button></div>`).join('')}</div>`;
+  $$('[data-app]',b).forEach(e=>e.onclick=()=>openApp(APPS[+e.dataset.app]));$('#pcf',b).onchange=e=>{S.confirmOpen=e.target.checked;saveS()};
+  $('#radd',b).onclick=async()=>{const t=$('#rt',b).value.trim(),m=+$('#rm',b).value;if(!t||!(m>0))return;await addReminder(t,Date.now()+m*60000);draw();toast('Recordatorio creado')};
+  $$('[data-rd]',b).forEach(e=>e.onclick=async()=>{REM=REM.filter(r=>r.id!==e.dataset.rd);await DB.put('kv',{id:'reminders',list:REM});draw()})};draw();
+}
+
+/* ---------- Imágenes y videos ---------- */
+const FMT={sq:{w:1024,h:1024,vw:800,vh:800,n:'Cuadrado'},pt:{w:768,h:1344,vw:720,vh:1280,n:'Vertical (TikTok/Reels)'},ls:{w:1344,h:768,vw:1280,vh:720,n:'Horizontal'}};
+const MEDIA={ctrl:null,busy:false,vurl:null};
+function imgUrl(p,w,h,seed){const q=encodeURIComponent(p),k=KEYS.pollinations;
+ return k?`https://gen.pollinations.ai/image/${q}?width=${w}&height=${h}&seed=${seed}&model=flux&nologo=true&key=${encodeURIComponent(k)}`
+ :`https://image.pollinations.ai/prompt/${q}?width=${w}&height=${h}&seed=${seed}&model=flux&nologo=true&private=true`}
+async function genImage(prompt,w,h,signal){
+ let r;try{r=await fetch(imgUrl(prompt,w,h,Math.floor(Math.random()*1e6)),{signal})}catch(e){if(e.name==='AbortError')throw e;throw new Error('No se pudo conectar con el servicio de imágenes (sin red o bloqueado por el navegador).')}
+ if(r.status===429)throw new Error('HTTP 429: límite del servicio gratuito de imágenes. Espera un minuto o usa una clave gratuita de enter.pollinations.ai.');
+ if(!r.ok)throw new Error('El servicio de imágenes respondió HTTP '+r.status);
+ const b=await r.blob();if(!/^image\//.test(b.type))throw new Error('La respuesta no fue una imagen.');return b}
+async function genRetry(p,w,h,sig){for(let a=0;;a++){try{return await genImage(p.slice(0,800),w,h,sig)}catch(e){if(e.name==='AbortError'||a>=2||!/429|HTTP 5|conectar/.test(e.message))throw e;await sleep(8000*(a+1),sig)}}}
+async function enhance(idea,signal){if(!KEYS[S.provider])return idea;let t='';try{await llm({system:'Convierte la idea del usuario en un prompt para un generador de imágenes. Responde SOLO con el prompt en inglés, detallado (sujeto, estilo, luz, composición), máximo 70 palabras, sin comillas.',messages:[{role:'user',text:idea}],maxTokens:200,signal,noThink:true,onText:x=>{t+=x}})}catch(e){if(e.name==='AbortError')throw e;return idea}return t.trim().replace(/^["']|["']$/g,'')||idea}
+async function storyboard(idea,n,signal){let t='';
+ await llm({system:'Eres guionista de videos cortos. Responde SOLO con JSON válido, sin markdown.',messages:[{role:'user',text:`Idea: ${idea}\nCrea ${n} escenas con este formato exacto: {"scenes":[{"prompt":"prompt de imagen en inglés, detallado y con estilo visual coherente con las demás escenas","caption":"texto corto en español para mostrar en pantalla (máx. 12 palabras)"}]}`}],maxTokens:1800,signal,noThink:true,onText:x=>{t+=x}});
+ let j;try{j=JSON.parse(t.replace(/```json|```/g,'').trim().replace(/^[^{]*/,'').replace(/[^}]*$/,''))}catch{throw new Error('La IA no devolvió un guion válido. Inténtalo de nuevo.')}
+ const sc=(j.scenes||[]).filter(s=>s&&s.prompt).slice(0,n);if(!sc.length)throw new Error('La IA no devolvió escenas.');return sc}
+async function galleryList(){const ks=(await DB.keys('kv')).filter(k=>String(k).startsWith('img:'));const out=[];for(const k of ks)out.push(await DB.get('kv',k));return out.filter(Boolean).sort((a,b)=>a.ts-b.ts)}
+async function saveImg(blob,prompt,w,h){await DB.put('kv',{id:'img:'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),blob,prompt,ts:Date.now(),w,h});const ks=(await DB.keys('kv')).filter(k=>String(k).startsWith('img:')).sort();while(ks.length>24)await DB.del('kv',ks.shift())}
+function saveBlob(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+function wrapText(cx,t,max){const out=[];let cur='';for(const w of String(t).split(/\s+/)){const x=cur?cur+' '+w:w;if(cx.measureText(x).width>max&&cur){out.push(cur);cur=w}else cur=x}if(cur)out.push(cur);return out}
+function drawSlide(cx,bmp,cap,w,h,p){
+ cx.globalAlpha=1;cx.fillStyle='#000';cx.fillRect(0,0,w,h);
+ const sc=Math.max(w/bmp.width,h/bmp.height)*(1+.08*p),dw=bmp.width*sc,dh=bmp.height*sc,a=Math.max(0,Math.min(1,p*6,(1-p)*6));
+ cx.globalAlpha=a;cx.drawImage(bmp,(w-dw)/2,(h-dh)/2,dw,dh);
+ if(cap){const fs=Math.round(w/22);cx.font=`600 ${fs}px system-ui,sans-serif`;cx.textAlign='center';const L=wrapText(cx,cap,w*.84),lh=fs*1.25,bh=L.length*lh+fs,y0=h-bh-h*.06;cx.globalAlpha=a*.6;cx.fillStyle='#000';cx.fillRect(w*.04,y0,w*.92,bh);cx.globalAlpha=a;cx.fillStyle='#fff';L.forEach((l,k)=>cx.fillText(l,w/2,y0+fs*.95+k*lh))}
+ cx.globalAlpha=1}
+async function renderSlides(scenes,{w,h,secs,onProg,signal}){
+ if(!window.MediaRecorder)throw new Error('Este navegador no puede grabar video.');
+ const mime=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
+ if(!mime)throw new Error('Este navegador no tiene un formato de video compatible.');
+ const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d');
+ const bm=await Promise.all(scenes.map(s=>createImageBitmap(s.blob)));
+ const rec=new MediaRecorder(cv.captureStream(30),{mimeType:mime,videoBitsPerSecond:2500000}),chunks=[];
+ rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};const stopped=new Promise(r=>{rec.onstop=r});
+ const total=scenes.length*secs*1000;let aborted=false;
+ drawSlide(cx,bm[0],scenes[0].caption,w,h,0);rec.start(500);const t0=performance.now();
+ await new Promise(res=>{const f=now=>{if(signal&&signal.aborted){aborted=true;res();return}const el=now-t0;if(el>=total){res();return}
+  const i=Math.min(scenes.length-1,Math.floor(el/(secs*1000)));drawSlide(cx,bm[i],scenes[i].caption,w,h,(el-i*secs*1000)/(secs*1000));if(onProg)onProg(el/total);requestAnimationFrame(f)};requestAnimationFrame(f)});
+ rec.stop();await stopped;bm.forEach(x=>x.close&&x.close());
+ if(aborted)throw new DOMException('abort','AbortError');
+ return new Blob(chunks,{type:mime.split(';')[0]});
+}
+async function genAIVideo({prompt,model,dur,ar},signal){
+ const k=KEYS.pollinations;if(!k)throw new Error('Necesitas una clave gratuita de enter.pollinations.ai (guárdala arriba en «Crear imagen»).');
+ const r=await fetch(`https://gen.pollinations.ai/video/${encodeURIComponent(prompt.slice(0,800))}?model=${encodeURIComponent(model)}&duration=${dur}&aspectRatio=${encodeURIComponent(ar)}&key=${encodeURIComponent(k)}`,{signal});
+ if(!r.ok){let m='';try{m=(await r.text()).slice(0,200)}catch{}throw new Error(`HTTP ${r.status} ${m}`)}
+ const b=await r.blob();if(!/^video\//.test(b.type))throw new Error('La respuesta no fue un video ('+(b.type||'sin tipo')+').');return b}
+
+async function toolMedia(b,opt={}){
+ const E=id=>$(id,b);let GAL=[],urls=[];
+ b.innerHTML=`<div class="row" style="margin-bottom:10px"><button id="mx" class="dng" disabled>Cancelar tarea</button><span id="mst" class="muted f"></span></div>
+ <details open><summary>Crear imagen</summary><div class="in">
+  <textarea id="mp" rows="3" placeholder="Describe la imagen. Ej.: un lobo cyberpunk bajo la lluvia, luces de neón azul"></textarea>
+  <div class="row" style="margin-top:8px"><select id="mf" class="f">${Object.entries(FMT).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('')}</select><select id="mn" style="width:84px"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+  <label class="row" style="margin-top:8px"><input type="checkbox" id="me" checked> Mejorar mi descripción con la IA</label>
+  <div class="row" style="margin-top:8px"><button class="pri" id="mgo" data-mb>Crear imagen</button></div>
+  <label class="l">CLAVE DE POLLINATIONS (opcional, gratuita en enter.pollinations.ai)</label>
+  <div class="row"><input class="f" id="mk" type="password" placeholder="${KEYS.pollinations?'Clave cargada':'Sin clave: servicio anónimo con límites'}" autocomplete="off"><button id="mks">Guardar</button></div>
+  <p class="muted">Servicio: Pollinations. Tu descripción se envía a ese servicio para crear la imagen. Sin clave es gratis pero con límite de velocidad; no verifiqué sus límites de hoy. Las imágenes se piden como privadas, pero no puedo garantizarlo.</p>
+ </div></details>
+ <details id="dv"><summary>Video con diapositivas (hecho en tu teléfono)</summary><div class="in">
+  <p class="muted">La IA escribe un guion, crea una imagen por escena y el teléfono las une en un video con zoom, transiciones y texto. No es video generado por IA: son imágenes animadas, sin audio.</p>
+  <textarea id="vp" rows="3" placeholder="¿De qué trata el video? Ej.: la historia de un robot que descubre el mar"></textarea>
+  <div class="row" style="margin-top:8px"><select id="vf" class="f">${Object.entries(FMT).map(([k,v])=>`<option value="${k}" ${k==='pt'?'selected':''}>${v.n}</option>`).join('')}</select><select id="vn" title="Escenas"><option value="4">4 escenas</option><option value="6" selected>6 escenas</option><option value="8">8 escenas</option></select><select id="vs" title="Segundos"><option value="2">2 s c/u</option><option value="3" selected>3 s c/u</option><option value="5">5 s c/u</option></select></div>
+  <div class="row" style="margin-top:8px"><button class="pri" id="vgo" data-mb>Crear video automático</button><button id="vsel" data-mb>Usar imágenes marcadas</button></div>
+  <p class="muted">Mantén la pantalla encendida y la app abierta mientras se graba (dura lo mismo que el video).</p>
+ </div></details>
+ <details><summary>Video con IA (experimental, requiere clave)</summary><div class="in">
+  <p class="muted">Usa el generador de video de Pollinations con tu clave gratuita. <b>No lo he probado</b> y puede tardar varios minutos, tener cuota baja o fallar; si pasa, dime el mensaje de error.</p>
+  <textarea id="ap" rows="3" placeholder="Describe el video"></textarea>
+  <div class="row" style="margin-top:8px"><input class="f" id="am" value="seedance" autocapitalize="off" title="Modelo"><select id="ad"><option>3</option><option selected>5</option><option>8</option></select><select id="ar"><option value="9:16">9:16</option><option value="16:9">16:9</option></select></div>
+  <div class="row" style="margin-top:8px"><button class="pri" id="ago" data-mb>Crear video con IA</button></div>
+ </div></details>
+ <div id="vout"></div>
+ <h4>Galería</h4><div id="mg"></div>`;
+ const stat=m=>{E('#mst').textContent=m};
+ const busy=v=>{MEDIA.busy=v;if(v){MEDIA.ctrl=new AbortController();setState('processing')}else setState('idle');$$('[data-mb]',b).forEach(x=>x.disabled=v);E('#mx').disabled=!v};
+ const run=async fn=>{if(MEDIA.busy)return;busy(true);let lock=null;try{if(navigator.wakeLock)lock=await navigator.wakeLock.request('screen')}catch{}
+  try{await fn(MEDIA.ctrl.signal)}catch(e){stat(e.name==='AbortError'?'Cancelado.':'Error: '+e.message)}
+  try{if(lock)lock.release()}catch{}busy(false)};
+ E('#mx').onclick=()=>{if(MEDIA.ctrl)MEDIA.ctrl.abort()};
+ const drawGal=async()=>{urls.forEach(u=>URL.revokeObjectURL(u));urls=[];GAL=await galleryList();const L=GAL.slice().reverse();
+  E('#mg').innerHTML=L.length?`<div class="gal">${L.map(g=>{const u=URL.createObjectURL(g.blob);urls.push(u);return `<div class="box" style="margin:0;padding:6px"><img src="${u}" alt="${esc(g.prompt.slice(0,60))}"><label class="row" style="margin:4px 0;font-size:12px"><input type="checkbox" data-sel="${g.id}"> usar en video</label><div class="row"><button data-gd="${g.id}">Guardar</button><button class="dng" data-gx="${g.id}">Borrar</button></div></div>`}).join('')}</div>`:'<p class="muted">Aún no hay imágenes.</p>';
+  $$('[data-gd]',b).forEach(e=>e.onclick=()=>{const g=GAL.find(x=>x.id===e.dataset.gd);saveBlob(slug(g.prompt)+(g.blob.type.includes('png')?'.png':'.jpg'),g.blob)});
+  $$('[data-gx]',b).forEach(e=>e.onclick=async()=>{await DB.del('kv',e.dataset.gx);drawGal()})};
+ const showVideo=blob=>{if(MEDIA.vurl)URL.revokeObjectURL(MEDIA.vurl);MEDIA.vurl=URL.createObjectURL(blob);const ext=blob.type.includes('mp4')?'mp4':'webm';
+  E('#vout').innerHTML=`<div class="box"><b>Video listo</b><video controls playsinline src="${MEDIA.vurl}" style="width:100%;border-radius:10px;margin-top:8px"></video><div class="row" style="margin-top:8px"><button id="vdl" class="pri">Guardar video (.${ext})</button></div></div>`;
+  E('#vdl').onclick=()=>saveBlob('jarvis-video.'+ext,blob);stat('Video listo.')};
+ E('#mks').onclick=async()=>{const k=E('#mk').value.trim();if(!k)return;KEYS.pollinations=k;const pin=await modal({title:'PIN opcional',body:'Con un PIN la clave se guarda cifrada en el teléfono. Si cancelas, solo vive hasta cerrar la app.',input:'password',okText:'Guardar'});if(pin&&crypto.subtle){try{await storeKey('pollinations',k,pin)}catch{}}E('#mk').value='';toast('Clave cargada')};
+ E('#mgo').onclick=()=>run(async sig=>{const idea=E('#mp').value.trim();if(!idea){stat('Describe la imagen.');return}
+  const f=FMT[E('#mf').value],n=+E('#mn').value;let p=idea;
+  if(E('#me').checked){stat('Mejorando la descripción…');p=await enhance(idea,sig)}
+  for(let i=1;i<=n;i++){stat(`Creando imagen ${i} de ${n}… (puede tardar entre 10 y 40 s)`);const bl=await genRetry(p,f.w,f.h,sig);await saveImg(bl,p,f.w,f.h);await drawGal()}
+  stat('Listo: las imágenes están en la galería.')});
+ const slides=async(scenes,fm,secs,sig)=>{const out=await renderSlides(scenes,{w:fm.vw,h:fm.vh,secs,signal:sig,onProg:p=>stat(`Grabando el video… ${Math.round(p*100)}% (no apagues la pantalla)`)});showVideo(out)};
+ E('#vgo').onclick=()=>run(async sig=>{const idea=E('#vp').value.trim();if(!idea){stat('Cuenta de qué trata el video.');return}
+  if(!KEYS[S.provider]){stat('Para escribir el guion necesito la IA configurada. Alternativa: marca imágenes de la galería y usa «Usar imágenes marcadas».');return}
+  const fm=FMT[E('#vf').value],n=+E('#vn').value,secs=+E('#vs').value;
+  stat('Escribiendo el guion…');const sc=await storyboard(idea,n,sig);const scenes=[];
+  for(let i=0;i<sc.length;i++){stat(`Creando imagen ${i+1} de ${sc.length}…`);const bl=await genRetry(sc[i].prompt,fm.w,fm.h,sig);await saveImg(bl,sc[i].prompt,fm.w,fm.h);scenes.push({blob:bl,caption:sc[i].caption||''})}
+  await drawGal();await slides(scenes,fm,secs,sig)});
+ E('#vsel').onclick=()=>run(async sig=>{const ids=$$('[data-sel]:checked',b).map(x=>x.dataset.sel);const scenes=GAL.filter(g=>ids.includes(g.id)).map(g=>({blob:g.blob,caption:''}));
+  if(!scenes.length){stat('Marca al menos una imagen de la galería («usar en video»).');return}
+  await slides(scenes,FMT[E('#vf').value],+E('#vs').value,sig)});
+ E('#ago').onclick=()=>run(async sig=>{const prompt=E('#ap').value.trim();if(!prompt){stat('Describe el video.');return}
+  stat('Generando video con IA… puede tardar varios minutos.');showVideo(await genAIVideo({prompt,model:E('#am').value.trim()||'seedance',dur:E('#ad').value,ar:E('#ar').value},sig))});
+ await drawGal();
+ if(opt.video){E('#dv').open=true;E('#vp').value=opt.video}
+ if(opt.auto){E('#mp').value=opt.auto;E('#mgo').click()}
+}
+
+/* ---------- Proyectos: interfaz ---------- */
+async function toolProjects(b){
+ PJ=null;const ps=(await DB.all('projects')).sort((a,b)=>b.updated-a.updated);
+ b.innerHTML=`<div class="box"><b>Nuevo proyecto</b>
+ <label class="l">TIPO</label><select id="pk"><option value="text">Texto / libro / historia</option><option value="doc">Documento</option><option value="code">Programa (por archivos)</option></select>
+ <label class="l">TÍTULO</label><input id="ptt" placeholder="Opcional">
+ <label class="l">INSTRUCCIÓN</label><textarea id="pb" rows="5" placeholder="Describe qué quieres. Ej.: Una novela de ciencia ficción de 20 capítulos sobre…"></textarea>
+ <label class="l">OBJETIVO DE EXTENSIÓN (opcional)</label><input id="pg" placeholder="Ej.: 30 000 palabras, 12 capítulos">
+ <label class="l">TAMAÑO DE CADA PARTE</label><select id="pm"><option value="breve">Breve</option><option value="detallado">Detallado</option><option value="extenso" selected>Extenso</option><option value="maxima">Máxima extensión</option></select>
+ <div class="row" style="margin-top:10px"><button class="pri" id="pcreate">Crear proyecto</button></div>
+ <p class="muted">La IA se llama varias veces; cada parte consume cuota del proveedor. Cada parte se guarda al terminar.</p></div>
+ <h4>Mis proyectos</h4>${ps.map(p=>`<button class="card" data-open="${p.id}" style="margin-bottom:8px"><b>${esc(p.title)}</b><span>${STP[p.status==='running'?'paused':p.status]||p.status} · ${p.segCount} partes · ${fmtN(p.words)} palabras</span></button>`).join('')||'<p class="muted">Todavía no hay proyectos.</p>'}`;
+ $('#pcreate',b).onclick=async()=>{const brief=$('#pb',b).value.trim();if(!brief){toast('Escribe la instrucción');return}PJ=await newProject({title:$('#ptt',b).value.trim(),kind:$('#pk',b).value,brief,mode:$('#pm',b).value,target:$('#pg',b).value.trim()});renderProjectView(b)};
+ $$('[data-open]',b).forEach(e=>e.onclick=async()=>{PJ=await DB.get('projects',e.dataset.open);renderProjectView(b)});
+}
+async function renderProjectView(b){
+ const p=PJ;if(!p)return;const run=Run.active&&Run.pid===p.id;
+ if(Run.active&&!Run.pid)Run.pid=p.id;
+ const busyOther=Run.active&&Run.pid!==p.id;
+ const files=p.kind==='code'&&p.files.length;
+ const keepOutline=$('#pol');const olv=keepOutline&&document.activeElement===keepOutline?null:p.outline;
+ if(olv===null){return}
+ b.innerHTML=`<div id="projView"><div class="row"><button id="pback">← Proyectos</button><span class="badge ${p.status==='error'?'er':p.status==='done'?'ok':''}">${run?'generando':STP[p.status]}</span></div>
+ <h3>${esc(p.title)}</h3>
+ <div class="kv"><span>Partes</span><span>${p.segCount}${p.trunc?' (última cortada: se continuará desde ahí)':''}</span><span>Palabras</span><span>${fmtN(p.words)}</span><span>Caracteres</span><span>${fmtN(p.chars)}</span>${files?`<span>Archivos</span><span>${p.files.length}</span>`:''}</div>
+ ${p.lastError?`<p style="color:var(--er)">${esc(p.lastError)}</p>`:''}
+ <div id="pwait" class="muted" style="margin-top:6px">${esc(Run.wait)}</div>
+ <pre class="live" id="plive">${esc(run?Run.live.slice(-2500):p.tail.slice(-900))||'Sin texto aún.'}</pre>
+ <div class="row">
+  ${run?`<button id="ppause">Pausar (al terminar la parte)</button><button class="dng" id="pstop">Detener ya</button>`:`<button class="pri" id="pnext" ${busyOther?'disabled':''}>${p.segCount?'Continuar':'Iniciar'}</button><button id="pall" ${busyOther?'disabled':''}>Generar hasta terminar</button><button id="pretry" ${p.segCount&&!busyOther?'':'disabled'}>Reintentar última parte</button>`}
+ </div>
+ <div class="row" style="margin-top:10px"><button id="pcopy" ${p.segCount?'':'disabled'}>Copiar todo</button><button id="ptxt" ${p.segCount?'':'disabled'}>Exportar TXT</button><button id="pmd" ${p.segCount?'':'disabled'}>Exportar Markdown</button><button id="pview" ${p.segCount?'':'disabled'}>Ver completo</button></div>
+ <details style="margin-top:12px"><summary>Esquema y memoria del proyecto</summary><div class="in"><textarea id="pol" rows="8">${esc(p.outline)}</textarea><div class="row" style="margin-top:6px"><button id="pols">Guardar esquema</button></div><p class="muted">Puedes editarlo: la IA lo usa en cada parte.</p>${p.sums.length?`<b>Progreso</b><div class="muted">${p.sums.slice(-12).map(s=>`Parte ${s.n}: ${esc(s.t)}`).join('<br>')}</div>`:''}</div></details>
+ <div id="pfiles"></div><div id="pfull"></div>
+ <div class="row" style="margin-top:14px"><button class="dng" id="pdel" ${run?'disabled':''}>Eliminar proyecto</button></div></div>`;
+ $('#pback',b).onclick=()=>{if(!Run.active)Run.pid=null;toolProjects(b)};
+ const start=u=>{Run.pid=p.id;runProject(p,u)};
+ if($('#pnext',b))$('#pnext',b).onclick=()=>start(false);
+ if($('#pall',b))$('#pall',b).onclick=()=>start(true);
+ if($('#pretry',b))$('#pretry',b).onclick=()=>retryLast(p);
+ if($('#ppause',b))$('#ppause',b).onclick=()=>{Run.pause=true;toast('Se pausará al terminar la parte actual')};
+ if($('#pstop',b))$('#pstop',b).onclick=()=>{Run.stop=true;if(Run.ctrl)Run.ctrl.abort()};
+ $('#pols',b).onclick=async()=>{p.outline=$('#pol',b).value;await DB.put('projects',p);toast('Esquema guardado')};
+ $('#pcopy',b).onclick=async()=>copyText((await projectParts(p)).join(''));
+ $('#ptxt',b).onclick=async()=>download(slug(p.title)+'.txt',[p.title+'\n\n',...await projectParts(p)]);
+ $('#pmd',b).onclick=async()=>download(slug(p.title)+'.md',['# '+p.title+'\n\n',...await projectParts(p)],'text/markdown');
+ $('#pview',b).onclick=async()=>{const t=(await projectParts(p)).join('');$('#pfull',b).innerHTML=`<textarea readonly rows="16" style="margin-top:10px">${esc(t)}</textarea>`};
+ $('#pdel',b).onclick=async()=>{if(await confirmBox('Eliminar proyecto','Se borrarán todas sus partes guardadas.')){await deleteProject(p);PJ=null;Run.pid=null;toolProjects(b)}};
+ if(files){const all=parseFiles((await projectParts(p)).join(''));$('#pfiles',b).innerHTML=`<h4>Archivos generados</h4>${all.map((f,i)=>`<div class="box row"><span class="f"><code>${esc(f.path)}</code><div class="muted">${fmtN(f.code.length)} car.</div></span><button data-fc="${i}">Copiar</button><button data-fd="${i}">Descargar</button></div>`).join('')}`;
+  $$('[data-fc]',b).forEach(e=>e.onclick=()=>copyText(all[+e.dataset.fc].code));
+  $$('[data-fd]',b).forEach(e=>e.onclick=()=>download(all[+e.dataset.fd].path.split('/').pop(),[all[+e.dataset.fd].code]))}
+}
+/* evita reescribir el panel mientras se edita el esquema */
+const _rp=renderProjectView;
+
+/* ---------- Pestaña Sistema ---------- */
+async function renderSys(){
+ const b=$('#sysBody');const open=$$('details',b).map(d=>d.open);
+ const bt=await battery();let est=null;try{est=await navigator.storage.estimate()}catch{}
+ const cn=navigator.connection||{};
+ const voices=('speechSynthesis'in window)?speechSynthesis.getVoices():[];
+ const stored=storedKeys();
+ b.innerHTML=`
+ <details><summary>Estado del dispositivo</summary><div class="in"><div class="kv">
+  <span>Conexión</span><span>${navigator.onLine?'en línea':'sin conexión'}${cn.effectiveType?' · '+cn.effectiveType:''}</span>
+  <span>Batería</span><span>${bt?bt.lvl+'%'+(bt.chg?' · cargando':''):'no disponible'}</span>
+  <span>RAM aprox.</span><span>${navigator.deviceMemory?'≥ '+navigator.deviceMemory+' GB (redondeado por el navegador)':'no informada'}</span>
+  <span>Núcleos CPU</span><span>${navigator.hardwareConcurrency||'?'}</span>
+  <span>Pantalla</span><span>${screen.width}×${screen.height} @${window.devicePixelRatio}x</span>
+  <span>Almacenamiento (app)</span><span>${est?`${(est.usage/1048576).toFixed(1)} MB de ${(est.quota/1073741824).toFixed(1)} GB`:'?'}</span>
+  <span>Voz a texto</span><span>${SR?'disponible':'no disponible'}</span>
+  <span>Texto a voz</span><span>${voices.length?voices.length+' voces':'sin voces cargadas'}</span>
+  <span>Contexto seguro</span><span>${window.isSecureContext?'sí':'NO (cifrado de claves y micrófono pueden fallar)'}</span>
+  <span>Instalada</span><span>${matchMedia('(display-mode: standalone)').matches?'sí':'no (solo navegador)'}</span>
+  <span>Modo bajo consumo</span><span>${lowP()?'activo':'inactivo'}${S.lowPower==='auto'?' (automático)':''}</span></div></div></details>
+
+ <details><summary>Ajustes de IA</summary><div class="in">
+  <label class="l">PROVEEDOR</label><select id="sProv">${Object.keys(PROV).map(k=>`<option value="${k}" ${S.provider===k?'selected':''}>${PROV[k].n}</option>`).join('')}</select>
+  <label class="l">MODELO</label><input id="sModel" value="${esc(S.models[S.provider]||'')}" autocapitalize="off">
+  <div id="sBaseW" ${S.provider==='gemini'?'hidden':''}><label class="l">URL BASE (compatible OpenAI)</label><input id="sBase" value="${esc(S.baseUrls[S.provider]||'')}" autocapitalize="off"></div>
+  <label class="l">CLAVE DE API (${esc(PROV[S.provider].help)})</label><input id="sKey" type="password" placeholder="${KEYS[S.provider]?'Clave cargada en esta sesión':'Pega tu clave'}" autocomplete="off">
+  <label class="l">PIN PARA CIFRARLA EN ESTE TELÉFONO (opcional)</label><input id="sPin" type="password" inputmode="numeric" placeholder="Sin PIN, la clave solo vive hasta cerrar la app" autocomplete="off">
+  <div class="row" style="margin-top:10px"><button class="pri" id="sSave">Guardar</button><button id="sTest">Probar conexión</button><button class="dng" id="sKdel" ${stored.length||KEYS[S.provider]?'':'disabled'}>Borrar claves</button></div>
+  <p class="muted">Los nombres de modelo y las cuotas gratuitas cambian con el tiempo; no los verifiqué hoy. Si un modelo da error 404, cámbialo aquí. Revisa los límites en el panel de tu proveedor. En planes gratuitos, algunos proveedores pueden usar tus datos para mejorar sus productos: lee sus términos.</p>
+  <label class="l">EXTENSIÓN DE RESPUESTAS</label><select id="sExt">${['breve','detallado','extenso','maxima'].map(k=>`<option value="${k}" ${S.ext===k?'selected':''}>${{breve:'Breve',detallado:'Detallado',extenso:'Extenso',maxima:'Máxima extensión'}[k]}</option>`).join('')}</select>
+  <label class="row" style="margin-top:10px"><input type="checkbox" id="sAuto" ${S.autoCont?'checked':''}> Continuar automáticamente si la respuesta se corta (hasta 3 veces)</label>
+  <label class="l">PARTES MÁXIMAS POR TANDA EN PROYECTOS (0 = sin límite)</label><input id="sMax" type="number" min="0" value="${S.maxParts}">
+  <label class="row" style="margin-top:10px"><input type="checkbox" id="sWake" ${S.wake?'checked':''}> Mantener la pantalla encendida durante proyectos largos (gasta batería, evita que Android pause la tarea)</label>
+ </div></details>
+
+ <details><summary>Voz</summary><div class="in">
+  <label class="l">LEER RESPUESTAS EN VOZ ALTA</label><select id="sSpk"><option value="voice" ${S.speak==='voice'?'selected':''}>Solo cuando hablé yo</option><option value="always" ${S.speak==='always'?'selected':''}>Siempre</option><option value="never" ${S.speak==='never'?'selected':''}>Nunca</option></select>
+  <label class="l">IDIOMA DE RECONOCIMIENTO</label><select id="sLang">${['es-ES','es-MX','es-AR','es-US','en-US'].map(l=>`<option ${S.lang===l?'selected':''}>${l}</option>`).join('')}</select>
+  <label class="l">VOZ</label><select id="sVoice"><option value="">Automática</option>${voices.filter(v=>/^es/i.test(v.lang)||!voices.some(x=>/^es/i.test(x.lang))).map(v=>`<option value="${esc(v.voiceURI)}" ${S.voiceURI===v.voiceURI?'selected':''}>${esc(v.name)} (${v.lang})</option>`).join('')}</select>
+  <label class="l">VELOCIDAD: <span id="sRv">${S.rate}</span></label><input type="range" id="sRate" min=".6" max="1.6" step=".1" value="${S.rate}">
+  <div class="row" style="margin-top:10px"><button id="sVt">Probar voz</button></div>
+  <p class="muted">El micrófono solo escucha cuando tú lo pulsas, una frase cada vez. No hay escucha permanente. En Chrome para Android, el reconocimiento de voz suele procesarse en servidores de Google.</p>
+ </div></details>
+
+ <details><summary>Apariencia y rendimiento</summary><div class="in">
+  <label class="l">MODO DE BAJO CONSUMO</label><select id="sLP"><option value="auto" ${S.lowPower==='auto'?'selected':''}>Automático (batería ≤ 20% sin cargar)</option><option value="on" ${S.lowPower==='on'?'selected':''}>Siempre activo</option><option value="off" ${S.lowPower==='off'?'selected':''}>Desactivado</option></select>
+  <p class="muted">En bajo consumo la esfera usa menos partículas y 15 fps, y se quitan brillos y transiciones. La esfera también reduce partículas si detecta lentitud. No he medido el ahorro real de batería.</p>
+ </div></details>
+
+ <details><summary>Privacidad y datos</summary><div class="in">
+  <b>Se guarda en este teléfono</b><p class="muted">Ajustes; conversaciones (si el historial está activo); notas; memoria; proyectos y sus partes; recordatorios; claves de API cifradas con tu PIN (AES-GCM) si elegiste PIN.</p>
+  <b>Se envía fuera</b><p class="muted">A tu proveedor de IA: tus mensajes, el contexto reciente, archivos adjuntos y la memoria si está activa. A Wikipedia: el texto de tu búsqueda. A Pollinations: tu descripción cuando creas imágenes o videos. A los servicios de voz del navegador: tu audio al dictar. La clave nunca va en el código de la app.</p>
+  <label class="row"><input type="checkbox" id="sHist" ${S.history?'checked':''}> Guardar historial de conversaciones</label>
+  <div class="row" style="margin-top:12px"><button class="dng" id="xChats">Borrar conversaciones</button><button class="dng" id="xNotes">Borrar notas</button><button class="dng" id="xProj">Borrar proyectos</button><button class="dng" id="xMem">Borrar memoria</button><button class="dng" id="xAll">Borrar TODO</button></div>
+ </div></details>
+
+ <details><summary>Estado de las funciones</summary><div class="in"><p class="muted"><b>Implementado:</b> creación de imágenes (Pollinations) y de videos con diapositivas hechos en el teléfono; video con IA (experimental, sin probar); chat con IA (3 proveedores + URL propia), voz a texto y texto a voz, esfera reactiva, proyectos largos por partes con guardado, continuación y exportación TXT/MD, calculadora local, notas, memoria, archivos de texto, búsqueda (Wikipedia / Google vía Gemini), recordatorios mientras la app está abierta, apertura de apps y ajustes por enlaces Android.<br><br><b>Pendiente:</b> leer PDF e imágenes; exportar ZIP; escucha por palabra de activación; notificaciones con la app cerrada; control del teléfono por Accesibilidad/ADB; APK nativo.</p></div></details>`;
+ $$('details',b).forEach((d,i)=>{if(open[i])d.open=true});
+ wireSys(b);
+}
+function wireSys(b){
+ const g=id=>$(id,b);
+ g('#sProv').onchange=e=>{S.provider=e.target.value;saveS();refreshChips();renderSys();$$('#sysBody details')[1].open=true};
+ g('#sSave').onclick=async()=>{S.models[S.provider]=g('#sModel').value.trim();if(S.provider!=='gemini')S.baseUrls[S.provider]=g('#sBase').value.trim();S.ext=g('#sExt').value;S.autoCont=g('#sAuto').checked;S.maxParts=Math.max(0,+g('#sMax').value||0);S.wake=g('#sWake').checked;saveS();
+  const k=g('#sKey').value.trim(),pin=g('#sPin').value;
+  if(k){KEYS[S.provider]=k;if(pin){if(!crypto.subtle){toast('Este contexto no permite cifrar; la clave quedará solo en esta sesión',4000)}else{try{await storeKey(S.provider,k,pin);toast('Clave guardada cifrada con tu PIN')}catch(e){toast('No se pudo cifrar: '+e.message)}}}else toast('Clave cargada solo para esta sesión',3500);g('#sKey').value='';g('#sPin').value=''}
+  else toast('Ajustes guardados');
+  $('#selExt').value=S.ext;refreshChips();renderSys()};
+ g('#sTest').onclick=async()=>{const k=g('#sKey').value.trim();if(k)KEYS[S.provider]=k;S.models[S.provider]=g('#sModel').value.trim();if(S.provider!=='gemini')S.baseUrls[S.provider]=g('#sBase').value.trim();let out='';try{await llm({system:'Responde brevemente.',messages:[{role:'user',text:'Responde solo con la palabra: OK'}],maxTokens:30,onText:t=>out+=t,noThink:true});await modal({title:'Conexión correcta',body:'La IA respondió: '+esc(out.trim()||'(vacío)'),cancelText:''})}catch(e){await modal({title:'Falló la prueba',body:esc(e.message),cancelText:''})}refreshChips()};
+ g('#sKdel').onclick=async()=>{if(await confirmBox('Borrar claves','Se eliminarán las claves guardadas y las cargadas en esta sesión.')){Object.keys(DEF.models).forEach(p=>localStorage.removeItem('jv_k_'+p));Object.keys(KEYS).forEach(k=>delete KEYS[k]);refreshChips();renderSys()}};
+ g('#sSpk').onchange=e=>{S.speak=e.target.value;saveS()};g('#sLang').onchange=e=>{S.lang=e.target.value;saveS()};g('#sVoice').onchange=e=>{S.voiceURI=e.target.value;saveS()};
+ g('#sRate').oninput=e=>{S.rate=+e.target.value;g('#sRv').textContent=S.rate;saveS()};
+ g('#sVt').onclick=()=>speak('Hola. Soy JARVIS, tu asistente. Esta es mi voz.');
+ g('#sLP').onchange=e=>{S.lowPower=e.target.value;saveS();refreshChips()};
+ g('#sHist').onchange=e=>{S.history=e.target.checked;saveS();if(!S.history)toast('Las conversaciones nuevas no se guardarán')};
+ const wipe=(id,t,fn)=>g(id).onclick=async()=>{if(await confirmBox(t,'Esta acción no se puede deshacer.')){await fn();toast('Borrado');loadChats()}};
+ wipe('#xChats','Borrar conversaciones',async()=>{await DB.clear('chats');CH={id:uid(),title:'Nueva conversación',msgs:[],updated:Date.now()};renderChat()});
+ wipe('#xNotes','Borrar notas',()=>DB.clear('notes'));
+ wipe('#xProj','Borrar proyectos',async()=>{await DB.clear('projects');for(const k of await DB.keys('kv'))if(String(k).startsWith('seg:'))await DB.del('kv',k)});
+ wipe('#xMem','Borrar memoria',async()=>{MEM=[];await saveMem()});
+ wipe('#xAll','Borrar TODO (conversaciones, notas, proyectos, memoria, claves y ajustes)',async()=>{for(const s of ['chats','notes','projects','kv'])await DB.clear(s);Object.keys(localStorage).filter(k=>k.startsWith('jv_')).forEach(k=>localStorage.removeItem(k));Object.keys(KEYS).forEach(k=>delete KEYS[k]);MEM=[];REM=[];CH={id:uid(),title:'Nueva conversación',msgs:[],updated:Date.now()};S=Object.assign({},DEF);renderChat();refreshChips();renderSys()});
+}
+
+/* ---------- Navegación ---------- */
+function goTab(t){
+ $$('nav button').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
+ $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));
+ $('#composer').hidden=!(t==='home'||t==='chat');
+ closeSheet();
+ if(t==='sys')renderSys();if(t==='chat'){renderChat();const v=$('#v-chat');v.scrollTop=v.scrollHeight}
+ if(t==='home')setTimeout(Orb.size,50);
+}
+async function loadChats(){const cs=(await DB.all('chats')).sort((a,b)=>b.updated-a.updated);const sel=$('#chatSel');sel.innerHTML=`<option value="${CH.id}">${esc(CH.title)} (actual)</option>`+cs.filter(c=>c.id!==CH.id).map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join('')}
+function applyMode(){const v=S.inputMode==='voice';$('#inp').hidden=v;$('#bTalk').hidden=!v;$('#bMode').innerHTML=svg(v?'kb':'mic');$('#bMode').title=v?'Cambiar a escribir':'Cambiar a hablar';$('#bMic').hidden=v;$('#bSend').hidden=v}
+
+/* ---------- Eventos ---------- */
+$$('nav button').forEach((b,i)=>{b.innerHTML=svg(b.dataset.tab)+`<span>${['Inicio','Conversación','Herramientas','Sistema'][i]}</span>`;b.onclick=()=>goTab(b.dataset.tab)});
+$('#bMic').innerHTML=svg('mic');$('#bSend').innerHTML=svg('send');
+$('#bSend').onclick=()=>{if(BUSY)stopAll();else send($('#inp').value)};
+$('#bMic').onclick=listen;$('#bTalk').onclick=listen;
+$('#bMode').onclick=()=>{S.inputMode=S.inputMode==='voice'?'text':'voice';saveS();applyMode()};
+$('#bStopVoice').onclick=()=>{stopSpeak();if(REC)try{REC.abort()}catch{}};
+$('#inp').oninput=autosize;
+$('#selExt').value=S.ext;$('#selExt').onchange=e=>{S.ext=e.target.value;saveS()};
+$('#tSearch').checked=S.search;$('#tSearch').onchange=e=>{S.search=e.target.checked;saveS();toast(S.provider==='gemini'?'Búsqueda de Google (Gemini) '+(S.search?'activada':'desactivada'):'Búsqueda en Wikipedia '+(S.search?'activada':'desactivada'))};
+$('#toolGrid').onclick=e=>{const c=e.target.closest('[data-tool]');if(c)openTool(c.dataset.tool)};
+$('#sheetBack').onclick=()=>{if(PJ&&$('#projView')){if(!Run.active)Run.pid=null;toolProjects($('#sheetBody'))}else closeSheet()};
+$('#bSetup').onclick=()=>{goTab('sys');$$('#sysBody details')[1].open=true};
+$('#bNewChat').onclick=async()=>{if(BUSY)return;CH={id:uid(),title:'Nueva conversación',msgs:[],updated:Date.now()};renderChat();loadChats()};
+$('#bDelChat').onclick=async()=>{if(BUSY)return;if(!await confirmBox('Borrar conversación','Se eliminará la conversación actual.'))return;await DB.del('chats',CH.id).catch(()=>{});CH={id:uid(),title:'Nueva conversación',msgs:[],updated:Date.now()};renderChat();loadChats()};
+$('#chatSel').onchange=async e=>{if(BUSY)return;const c=await DB.get('chats',e.target.value);if(c){CH=c;renderChat();loadChats()}};
+$('#msgs').onclick=async e=>{
+ const cc=e.target.closest('[data-copycode]');if(cc){copyText(cc.closest('.code').querySelector('pre').textContent);return}
+ const a=e.target.closest('[data-act]');if(!a)return;const m=CH.msgs[+a.dataset.i];
+ if(a.dataset.act==='copy')copyText(m.text);
+ else if(a.dataset.act==='speak')speak(m.text);
+ else if(a.dataset.act==='cont'&&!BUSY)respond({cont:true});
+ else if(a.dataset.act==='retry'&&!BUSY){if(m.text){respond({cont:true})}else{CH.msgs.pop();respond({})}}
+};
+$('#lastReply').onclick=e=>{const cc=e.target.closest('[data-copycode]');if(cc)copyText(cc.closest('.code').querySelector('pre').textContent)};
+$('#quick').innerHTML=['Explícame algo en 3 frases','Ayúdame a depurar código','Nuevo proyecto largo','Estado de la batería'].map((t,i)=>`<button data-q="${i}">${t}</button>`).join('');
+$('#quick').onclick=e=>{const q=e.target.closest('[data-q]');if(!q)return;const i=+q.dataset.q;if(i===0){$('#inp').value='Explícame de forma clara y en 3 frases: ';$('#inp').focus()}else if(i===1){goTab('tools');openTool('code')}else if(i===2){goTab('tools');openTool('proy')}else{goTab('chat');send('batería')}};
+window.addEventListener('online',()=>setState(STATE));window.addEventListener('offline',()=>setState(STATE));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkRem()});
+if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{if($('#v-sys').classList.contains('on')&&!$('#sSave'))renderSys()};
+
+/* ---------- Arranque ---------- */
+(async function init(){
+ $('#bMode').innerHTML=svg('mic');updateSend();applyMode();setState('idle');
+ try{await DB.open()}catch(e){toast('No se pudo abrir el almacenamiento local: '+e.message,5000)}
+ try{
+  const m=await DB.get('kv','mem');MEM=m?m.items:[];const r=await DB.get('kv','reminders');REM=r?r.list:[];
+  const ps=await DB.all('projects');for(const p of ps)if(p.status==='running'){p.status='paused';await DB.put('projects',p)}
+  if(S.history){const cs=(await DB.all('chats')).sort((a,b)=>b.updated-a.updated);if(cs[0]&&cs[0].msgs.length)CH=cs[0]}
+ }catch{}
+ renderChat();loadChats();refreshChips();setInterval(checkRem,15000);
+ try{const b=await navigator.getBattery();const f=()=>{AUTO_LP=b.level<=.2&&!b.charging;refreshChips()};f();b.onlevelchange=f;b.onchargingchange=f}catch{}
+ if('serviceWorker'in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+ const st=storedKeys();
+ if(st.length){
+  if(!window.isSecureContext||!crypto.subtle){toast('Contexto no seguro: no se pueden descifrar las claves',5000)}
+  else for(let tries=0;tries<3;tries++){const pin=await modal({title:'Desbloquear JARVIS',body:'Introduce tu PIN para descifrar la clave de IA guardada.'+(tries?' <span style="color:var(--er)">PIN incorrecto.</span>':''),input:'password',okText:'Desbloquear',cancelText:'Omitir'});if(pin===null)break;if(await unlockKeys(pin))break}
+  refreshChips();
+ }
+})();
+</script>
+</body>
+</html>
